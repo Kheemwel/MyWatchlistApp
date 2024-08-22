@@ -4,13 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.kheemwel.mywatchlist.core.LocalNavController
+import com.kheemwel.mywatchlist.ui.screens.AddMovieScreen
+import com.kheemwel.mywatchlist.ui.screens.AddSeriesScreen
+import com.kheemwel.mywatchlist.ui.screens.HomeScreen
+import com.kheemwel.mywatchlist.ui.screens.SettingsScreen
 import com.kheemwel.mywatchlist.ui.theme.MyWatchlistAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,35 +24,34 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MyWatchlistAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+            Main()
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MainPreview() {
+    Main()
+}
+
+@Composable
+private fun Main() {
+    val navController = rememberNavController()
+    CompositionLocalProvider(LocalNavController provides navController) {
+        MyWatchlistAppTheme {
+            NavHost(
+                navController = navController,
+                startDestination = "/home",
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None }
+            ) {
+                composable("/home") { HomeScreen() }
+                composable("/settings") { SettingsScreen() }
+                composable("/add-movie") { AddMovieScreen() }
+                composable("/add-series") { AddSeriesScreen() }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyWatchlistAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Greeting(
-                name = "Android",
-                modifier = Modifier.padding(innerPadding)
-            )
-        }
-    }
-}
