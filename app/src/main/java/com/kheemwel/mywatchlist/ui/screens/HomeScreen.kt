@@ -24,12 +24,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.kheemwel.mywatchlist.ui.composables.AppScaffold
+import com.kheemwel.mywatchlist.ui.composables.HomeScaffold
 
 @Composable
 fun HomeScreen(navController: NavController) {
-    AppScaffold(navController, title = "Home", actions = {
+    HomeScaffold("Home", actions = {
         IconButton(onClick = { navController.navigate("/settings") }) {
             Icon(Icons.Filled.Settings, contentDescription = "Settings")
         }
