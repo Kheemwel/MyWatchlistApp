@@ -15,12 +15,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kheemwel.mywatchlist.data.models.CountryModel
 import com.kheemwel.mywatchlist.data.models.GenreModel
+import com.kheemwel.mywatchlist.data.models.MovieModel
+import com.kheemwel.mywatchlist.data.models.SeriesModel
 import com.kheemwel.mywatchlist.data.models.StatusModel
 import com.kheemwel.mywatchlist.ui.screens.CountriesScreen
 import com.kheemwel.mywatchlist.ui.screens.GenresScreen
-import com.kheemwel.mywatchlist.ui.screens.HomeScreen
 import com.kheemwel.mywatchlist.ui.screens.SettingsScreen
 import com.kheemwel.mywatchlist.ui.screens.StatusesScreen
+import com.kheemwel.mywatchlist.ui.screens.home.HomeScreen
 import com.kheemwel.mywatchlist.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
@@ -42,6 +44,9 @@ private fun MainPreview() {
 @Composable
 private fun Main() {
     val navController = rememberNavController()
+
+    val movieModel = MovieModel()
+    val seriesModel = SeriesModel()
     val statusModel = StatusModel()
     val genreModel = GenreModel()
     val countryModel = CountryModel()
@@ -65,7 +70,16 @@ private fun Main() {
                 )
             }
         ) {
-            composable("/home") { HomeScreen(navController) }
+            composable("/home") {
+                HomeScreen(
+                    navController,
+                    movieModel,
+                    seriesModel,
+                    statusModel,
+                    genreModel,
+                    countryModel
+                )
+            }
             composable("/settings") { SettingsScreen(navController) }
             composable("/settings/statuses") { StatusesScreen(navController, statusModel) }
             composable("/settings/genres") { GenresScreen(navController, genreModel) }

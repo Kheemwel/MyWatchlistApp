@@ -10,7 +10,10 @@ fun ConfirmationDialog(
     state: Boolean,
     title: String,
     message: String,
+    onDismiss: () -> Unit = {},
+    onCancelText: String = "Cancel",
     onCancel: () -> Unit,
+    onConfirmText: String = "OK",
     onConfirm: () -> Unit
 ) {
     if (state) {
@@ -19,25 +22,19 @@ fun ConfirmationDialog(
                 Text(title)
             },
             text = { Text(message) },
-            onDismissRequest = {
-                onCancel()
-            },
+            onDismissRequest = onDismiss,
             confirmButton = {
                 TextButton(
-                    onClick = {
-                        onConfirm()
-                    }
+                    onClick = onConfirm
                 ) {
-                    Text("OK")
+                    Text(onConfirmText)
                 }
             },
             dismissButton = {
                 TextButton(
-                    onClick = {
-                        onCancel()
-                    }
+                    onClick = onCancel
                 ) {
-                    Text("Cancel")
+                    Text(onCancelText)
                 }
             }
         )
