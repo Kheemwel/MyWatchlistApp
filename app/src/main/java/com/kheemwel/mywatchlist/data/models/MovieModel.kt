@@ -1,7 +1,7 @@
 package com.kheemwel.mywatchlist.data.models
 
 import androidx.lifecycle.ViewModel
-import com.kheemwel.mywatchlist.core.getCurrentDateTimeAsString
+import com.kheemwel.mywatchlist.utils.getCurrentDateTimeAsString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +22,10 @@ data class Movie(
 class MovieModel : ViewModel() {
     private val _movies = MutableStateFlow(emptyList<Movie>())
     val movies: StateFlow<List<Movie>> = _movies.asStateFlow()
+
+    fun getMovie(uuid: String): Movie? {
+        return _movies.value.find { it.uuid == uuid }
+    }
 
     fun addMovie(movie: Movie) {
         _movies.update {
@@ -44,9 +48,9 @@ class MovieModel : ViewModel() {
         }
     }
 
-    fun deleteMovies(ids: List<String>) {
+    fun deleteMovies(uuids: List<String>) {
         _movies.update { currentList ->
-            currentList.filterNot { it.uuid in ids }
+            currentList.filterNot { it.uuid in uuids }
         }
     }
 

@@ -22,12 +22,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import com.kheemwel.mywatchlist.core.convertMillisToDate
+import com.kheemwel.mywatchlist.utils.convertDateToLong
+import com.kheemwel.mywatchlist.utils.convertMillisToDate
 
 @Composable
-fun DatePickerField(label: String, required: Boolean = false, onDateSelected: (String) -> Unit) {
+fun DatePickerField(
+    label: String,
+    initialValue: String = "",
+    required: Boolean = false,
+    onDateSelected: (String) -> Unit,
+) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
+
+    if (initialValue.isNotEmpty()) {
+        selectedDate = convertDateToLong(initialValue)
+    }
 
     OutlinedTextField(
         modifier = Modifier
@@ -57,6 +67,7 @@ fun DatePickerField(label: String, required: Boolean = false, onDateSelected: (S
 
     if (showModal) {
         DatePickerModal(
+            initialDate = selectedDate,
             onDateSelected = { date ->
                 selectedDate = date
                 onDateSelected(date?.let { convertMillisToDate(it) } ?: "")
@@ -69,10 +80,11 @@ fun DatePickerField(label: String, required: Boolean = false, onDateSelected: (S
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DatePickerModal(
+    initialDate: Long? = null,
     onDateSelected: (Long?) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialDate)
 
     DatePickerDialog(
         onDismissRequest = onDismiss,

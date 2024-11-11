@@ -84,20 +84,28 @@ fun WatchTile(
                                 )
                             }
                         },
-                        text = { Text("${if (isFavorite) "Remove" else "Add"} to favorites") },
-                        onClick = { onFavorite() })
+                        text = { Text("${if (isFavorite) "Remove from" else "Add  to"} favorites") },
+                        onClick = {
+                            onFavorite()
+                        })
                     DropdownMenuItem(leadingIcon = {
                         Icon(
                             Icons.Filled.Edit,
                             contentDescription = "Edit"
                         )
-                    }, text = { Text("Edit") }, onClick = { onEdit() })
+                    }, text = { Text("Edit") }, onClick = {
+                        openMenu = false
+                        onEdit()
+                    })
                     DropdownMenuItem(leadingIcon = {
                         Icon(
                             Icons.Filled.Delete,
                             contentDescription = "Delete"
                         )
-                    }, text = { Text("Delete") }, onClick = { onDelete() })
+                    }, text = { Text("Delete") }, onClick = {
+                        openMenu = false
+                        onDelete()
+                    })
                 }
             }
         }

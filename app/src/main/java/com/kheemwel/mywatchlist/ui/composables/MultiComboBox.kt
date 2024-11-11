@@ -33,8 +33,8 @@ fun MultiComboBox(
     onItemSelected: (List<String>) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val selectedItems = remember { mutableStateListOf<String>() }
-    selectedItems.addAll(initialValues)
+    val selectedItems =
+        remember(initialValues) { mutableStateListOf<String>().also { it.addAll(initialValues) } }
 
     ExposedDropdownMenuBox(
         expanded = expanded,

@@ -32,7 +32,7 @@ fun ComboBox(
     onItemSelected: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf(initialValue) }
+    var selectedItem by remember(initialValue) { mutableStateOf(initialValue) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
