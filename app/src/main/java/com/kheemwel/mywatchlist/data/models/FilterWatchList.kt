@@ -6,6 +6,7 @@ enum class FilterSortBy {
     Title,
     ReleaseDate,
     LastModified,
+    Favorite
 }
 
 enum class FilterSortDirection {

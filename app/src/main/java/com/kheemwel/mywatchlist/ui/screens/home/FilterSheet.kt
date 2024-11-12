@@ -128,6 +128,7 @@ private fun TagsTab(
     initialValues: List<String> = emptyList(),
     onItemsSelected: (List<String>) -> Unit
 ) {
+    val tags = (items + initialValues).distinct()
     val selectedItems = remember(initialValues) { mutableStateListOf<String>().also { it.addAll(initialValues) } }
 
     FlowRow(
@@ -136,19 +137,19 @@ private fun TagsTab(
             .verticalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items.forEach { item ->
-            val selected = selectedItems.contains(item)
+        tags.forEach { tag ->
+            val selected = selectedItems.contains(tag)
             FilterChip(
                 onClick = {
                     if (selected) {
-                        selectedItems.remove(item)
+                        selectedItems.remove(tag)
                     } else {
-                        selectedItems.add(item)
+                        selectedItems.add(tag)
                     }
                     onItemsSelected(selectedItems)
                 },
                 label = {
-                    Text(item)
+                    Text(tag)
                 },
                 selected = selected,
                 leadingIcon = if (selected) {
@@ -176,7 +177,8 @@ private fun SortTab(
     val sortOptions = listOf(
         Pair(FilterSortBy.Title, "Alphabetically"),
         Pair(FilterSortBy.ReleaseDate, "Release Date"),
-        Pair(FilterSortBy.LastModified, "Last Modified")
+        Pair(FilterSortBy.LastModified, "Last Modified"),
+        Pair(FilterSortBy.Favorite, "Favorite")
     )
 
     LazyColumn {

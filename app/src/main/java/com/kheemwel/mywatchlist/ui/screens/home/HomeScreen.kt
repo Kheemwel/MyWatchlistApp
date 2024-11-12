@@ -111,6 +111,7 @@ fun HomeScreen(
                     FilterSortBy.Title -> it.title
                     FilterSortBy.ReleaseDate -> it.releaseDate
                     FilterSortBy.LastModified -> it.lastModified
+                    FilterSortBy.Favorite -> it.isFavorite.toString()
                 }
             }
         } else {
@@ -119,6 +120,7 @@ fun HomeScreen(
                     FilterSortBy.Title -> it.title
                     FilterSortBy.ReleaseDate -> it.releaseDate
                     FilterSortBy.LastModified -> it.lastModified
+                    FilterSortBy.Favorite -> it.isFavorite.toString()
                 }
             }
         }
@@ -146,6 +148,7 @@ fun HomeScreen(
                     FilterSortBy.Title -> it.title
                     FilterSortBy.ReleaseDate -> it.releaseDate
                     FilterSortBy.LastModified -> it.lastModified
+                    FilterSortBy.Favorite -> it.isFavorite.toString()
                 }
             }
         } else {
@@ -154,6 +157,7 @@ fun HomeScreen(
                     FilterSortBy.Title -> it.title
                     FilterSortBy.ReleaseDate -> it.releaseDate
                     FilterSortBy.LastModified -> it.lastModified
+                    FilterSortBy.Favorite -> it.isFavorite.toString()
                 }
             }
         }
