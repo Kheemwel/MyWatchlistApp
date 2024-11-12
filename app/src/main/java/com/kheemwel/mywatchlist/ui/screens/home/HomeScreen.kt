@@ -33,10 +33,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kheemwel.mywatchlist.R
+import com.kheemwel.mywatchlist.data.database.SharedPref
 import com.kheemwel.mywatchlist.data.models.CountryModel
 import com.kheemwel.mywatchlist.data.models.FilterSortBy
 import com.kheemwel.mywatchlist.data.models.FilterSortDirection
-import com.kheemwel.mywatchlist.data.models.FilterWatchList
 import com.kheemwel.mywatchlist.data.models.GenreModel
 import com.kheemwel.mywatchlist.data.models.Movie
 import com.kheemwel.mywatchlist.data.models.MovieModel
@@ -44,8 +44,6 @@ import com.kheemwel.mywatchlist.data.models.Series
 import com.kheemwel.mywatchlist.data.models.SeriesModel
 import com.kheemwel.mywatchlist.data.models.StatusModel
 import com.kheemwel.mywatchlist.ui.composables.ConfirmationDialog
-import com.kheemwel.mywatchlist.utils.generateDummyMovies
-import com.kheemwel.mywatchlist.utils.generateDummySeries
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +62,7 @@ fun HomeScreen(
 
     var searchText by remember { mutableStateOf("") }
     var showFilter by remember { mutableStateOf(false) }
-    var filter by remember { mutableStateOf(FilterWatchList()) }
+    var filter by remember { mutableStateOf(SharedPref.getFilter()) }
     val filterState = rememberModalBottomSheetState()
 
     val scope = rememberCoroutineScope()
@@ -243,26 +241,8 @@ fun HomeScreen(
         onSearch = { searchText = it },
         isFilterActive = filter.genres.isNotEmpty() || filter.statuses.isNotEmpty() || filter.countries.isNotEmpty(),
         onFilter = { showFilter = !showFilter },
-        onAddMovie = {
-            showAddMovie = true
-            generateDummyMovies(
-                8,
-                movieModel,
-                genres.value,
-                countries.value,
-                statuses.value
-            )
-        },
-        onAddSeries = {
-            showAddSeries = true
-            generateDummySeries(
-                8,
-                seriesModel,
-                genres.value,
-                countries.value,
-                statuses.value
-            )
-        }
+        onAddMovie = { showAddMovie = true },
+        onAddSeries = { showAddSeries = true }
     ) { innerPadding ->
         if (showAddMovie) {
             AddMovieSheet(
@@ -367,9 +347,10 @@ fun HomeScreen(
                 genres.value,
                 countries.value,
                 statuses.value,
-                onDismiss = { showFilter = false }) {
+                onDismiss = { showFilter = false }
+            ) {
                 filter = it
-                println(filter.statuses)
+                SharedPref.setFilter(it)
             }
         }
 

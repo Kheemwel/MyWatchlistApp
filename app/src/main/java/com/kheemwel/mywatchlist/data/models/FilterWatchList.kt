@@ -1,5 +1,6 @@
 package com.kheemwel.mywatchlist.data.models
 
+import kotlinx.serialization.Serializable
 
 enum class FilterSortBy {
     Title,
@@ -12,6 +13,7 @@ enum class FilterSortDirection {
     Descending,
 }
 
+@Serializable
 data class FilterWatchList(
     val statuses: List<String> = emptyList(),
     val genres: List<String> = emptyList(),

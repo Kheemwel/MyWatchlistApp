@@ -9,10 +9,12 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kheemwel.mywatchlist.data.database.SharedPref
 import com.kheemwel.mywatchlist.data.models.CountryModel
 import com.kheemwel.mywatchlist.data.models.GenreModel
 import com.kheemwel.mywatchlist.data.models.MovieModel
@@ -44,6 +46,8 @@ private fun MainPreview() {
 @Composable
 private fun Main() {
     val navController = rememberNavController()
+
+    SharedPref.init(LocalContext.current)
 
     val movieModel = MovieModel()
     val seriesModel = SeriesModel()

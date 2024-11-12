@@ -1,46 +1,19 @@
 package com.kheemwel.mywatchlist.data.models
 
 import androidx.lifecycle.ViewModel
+import com.kheemwel.mywatchlist.data.database.SharedPref
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class GenreModel : ViewModel() {
-    private val _genres = MutableStateFlow(
-        listOf(
-            "SciFi",
-            "Thriller",
-            "Fantasy",
-            "Romance",
-            "Drama",
-            "Action",
-            "Adventure",
-            "Comedy",
-            "Horror",
-            "Animation",
-            "Anime",
-            "Cartoon",
-            "Documentary",
-            "Family",
-            "History",
-            "Musical",
-            "Mystery",
-            "War",
-            "Western",
-            "Asian",
-            "BL",
-            "GL",
-            "LGBTQIA+",
-            "Hollywood",
-            "Bollywood",
-            "Netflix"
-        )
-    )
+    private val _genres = MutableStateFlow(SharedPref.getGenres())
     val genres: StateFlow<List<String>> = _genres.asStateFlow()
 
     fun addGenre(genre: String) {
         _genres.update { it + genre }
+        save()
     }
 
     fun updateGenre(index: Int, newGenre: String) {
@@ -49,6 +22,7 @@ class GenreModel : ViewModel() {
                 currentList.toMutableList().apply { set(index, newGenre) }
             }
         }
+        save()
     }
 
     fun deleteGenre(index: Int) {
@@ -57,6 +31,7 @@ class GenreModel : ViewModel() {
                 currentList.toMutableList().apply { removeAt(index) }
             }
         }
+        save()
     }
 
     fun deleteGenres(indexes: List<Int>) {
@@ -69,9 +44,14 @@ class GenreModel : ViewModel() {
                 }
             }
         }
+        save()
     }
 
     fun isGenreExists(genre: String): Boolean {
         return _genres.value.contains(genre)
+    }
+
+    private fun save() {
+        SharedPref.setGenres(_genres.value)
     }
 }

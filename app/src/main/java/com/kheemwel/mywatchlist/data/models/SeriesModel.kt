@@ -1,13 +1,16 @@
 package com.kheemwel.mywatchlist.data.models
 
 import androidx.lifecycle.ViewModel
+import com.kheemwel.mywatchlist.data.database.SharedPref
 import com.kheemwel.mywatchlist.utils.getCurrentDateTimeAsString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.Serializable
 import java.util.UUID
 
+@Serializable
 data class Series(
     val uuid: String = "",
     val title: String,
@@ -22,7 +25,7 @@ data class Series(
 )
 
 class SeriesModel : ViewModel() {
-    private val _series = MutableStateFlow(emptyList<Series>())
+    private val _series = MutableStateFlow(SharedPref.getSeries())
     val series: StateFlow<List<Series>> = _series.asStateFlow()
 
     fun getSeries(uuid: String): Series? {
@@ -36,24 +39,28 @@ class SeriesModel : ViewModel() {
                 lastModified = getCurrentDateTimeAsString()
             )
         }
+        save()
     }
 
     fun updateSeries(uuid: String, newSeries: Series) {
         _series.update { currentList ->
             currentList.map { if (it.uuid == uuid) newSeries.copy(lastModified = getCurrentDateTimeAsString()) else it }
         }
+        save()
     }
 
     fun deleteSeries(uuid: String) {
         _series.update { currentList ->
             currentList.filterNot { it.uuid == uuid }
         }
+        save()
     }
 
     fun deleteSeries(uuids: List<String>) {
         _series.update { currentList ->
             currentList.filterNot { it.uuid in uuids }
         }
+        save()
     }
 
     fun isSeriesExists(uuid: String): Boolean {
@@ -69,5 +76,10 @@ class SeriesModel : ViewModel() {
                 ) else it
             }
         }
+        save()
+    }
+
+    private fun save() {
+        SharedPref.setSeries(_series.value)
     }
 }

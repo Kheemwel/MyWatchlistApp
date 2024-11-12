@@ -1,9 +1,12 @@
 package com.kheemwel.mywatchlist.utils
 
+import com.kheemwel.mywatchlist.data.models.CountryModel
+import com.kheemwel.mywatchlist.data.models.GenreModel
 import com.kheemwel.mywatchlist.data.models.Movie
 import com.kheemwel.mywatchlist.data.models.MovieModel
 import com.kheemwel.mywatchlist.data.models.Series
 import com.kheemwel.mywatchlist.data.models.SeriesModel
+import com.kheemwel.mywatchlist.data.models.StatusModel
 import java.util.UUID
 import kotlin.random.Random
 
@@ -28,6 +31,70 @@ fun generateDummyMovies(
                 lastModified = generateRandomDate(),
             )
         )
+    }
+}
+
+fun generateStatuses(statusModel: StatusModel) {
+    val statuses = listOf(
+        "Pending",
+        "Still Watching",
+        "Finished",
+        "Waiting"
+    )
+    statuses.forEach {
+        statusModel.addStatus(it)
+    }
+}
+
+fun generateGenres(genreModel: GenreModel) {
+    val genres = listOf(
+        "SciFi",
+        "Thriller",
+        "Fantasy",
+        "Romance",
+        "Drama",
+        "Action",
+        "Adventure",
+        "Comedy",
+        "Horror",
+        "Animation",
+        "Anime",
+        "Cartoon",
+        "Documentary",
+        "Family",
+        "History",
+        "Musical",
+        "Mystery",
+        "War",
+        "Western",
+        "Asian",
+        "BL",
+        "GL",
+        "LGBTQIA+",
+        "Hollywood",
+        "Bollywood",
+        "Netflix"
+    )
+    genres.forEach {
+        genreModel.addGenre(it)
+    }
+}
+
+fun generateCountries(countryModel: CountryModel) {
+    val countries = listOf(
+        "America",
+        "UK",
+        "Korea",
+        "Japan",
+        "China",
+        "Taiwan",
+        "Thailand",
+        "Philippines",
+        "Indonesia",
+        "India"
+    )
+    countries.forEach {
+        countryModel.addCountry(it)
     }
 }
 

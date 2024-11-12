@@ -1,30 +1,19 @@
 package com.kheemwel.mywatchlist.data.models
 
 import androidx.lifecycle.ViewModel
+import com.kheemwel.mywatchlist.data.database.SharedPref
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class CountryModel : ViewModel() {
-    private val _countries = MutableStateFlow(
-        listOf(
-            "America",
-            "UK",
-            "Korea",
-            "Japan",
-            "China",
-            "Taiwan",
-            "Thailand",
-            "Philippines",
-            "Indonesia",
-            "India"
-        )
-    )
+    private val _countries = MutableStateFlow(SharedPref.getCountries())
     val countries: StateFlow<List<String>> = _countries.asStateFlow()
 
     fun addCountry(country: String) {
         _countries.update { it + country }
+        save()
     }
 
     fun updateCountry(index: Int, newCountry: String) {
@@ -33,6 +22,7 @@ class CountryModel : ViewModel() {
                 currentList.toMutableList().apply { set(index, newCountry) }
             }
         }
+        save()
     }
 
     fun deleteCountry(index: Int) {
@@ -41,6 +31,7 @@ class CountryModel : ViewModel() {
                 currentList.toMutableList().apply { removeAt(index) }
             }
         }
+        save()
     }
 
     fun deleteCountries(indexes: List<Int>) {
@@ -53,9 +44,14 @@ class CountryModel : ViewModel() {
                 }
             }
         }
+        save()
     }
 
     fun isCountryExists(country: String): Boolean {
         return _countries.value.contains(country)
+    }
+
+    private fun save() {
+        SharedPref.setCountries(_countries.value)
     }
 }

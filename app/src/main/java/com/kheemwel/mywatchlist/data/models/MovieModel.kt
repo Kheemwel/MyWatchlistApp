@@ -1,13 +1,16 @@
 package com.kheemwel.mywatchlist.data.models
 
 import androidx.lifecycle.ViewModel
+import com.kheemwel.mywatchlist.data.database.SharedPref
 import com.kheemwel.mywatchlist.utils.getCurrentDateTimeAsString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.Serializable
 import java.util.UUID
 
+@Serializable
 data class Movie(
     val uuid: String = "",
     val title: String,
@@ -20,7 +23,7 @@ data class Movie(
 )
 
 class MovieModel : ViewModel() {
-    private val _movies = MutableStateFlow(emptyList<Movie>())
+    private val _movies = MutableStateFlow(SharedPref.getMovies())
     val movies: StateFlow<List<Movie>> = _movies.asStateFlow()
 
     fun getMovie(uuid: String): Movie? {
@@ -34,24 +37,28 @@ class MovieModel : ViewModel() {
                 lastModified = getCurrentDateTimeAsString()
             )
         }
+        save()
     }
 
     fun updateMovie(uuid: String, newMovie: Movie) {
         _movies.update { currentList ->
             currentList.map { if (it.uuid == uuid) newMovie.copy(lastModified = getCurrentDateTimeAsString()) else it }
         }
+        save()
     }
 
     fun deleteMovie(uuid: String) {
         _movies.update { currentList ->
             currentList.filterNot { it.uuid == uuid }
         }
+        save()
     }
 
     fun deleteMovies(uuids: List<String>) {
         _movies.update { currentList ->
             currentList.filterNot { it.uuid in uuids }
         }
+        save()
     }
 
     fun isMovieExists(uuid: String): Boolean {
@@ -67,5 +74,10 @@ class MovieModel : ViewModel() {
                 ) else it
             }
         }
+        save()
+    }
+
+    private fun save() {
+        SharedPref.setMovies(_movies.value)
     }
 }
