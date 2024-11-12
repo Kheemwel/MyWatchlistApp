@@ -5,13 +5,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +28,9 @@ fun TagScaffold(
     title: String,
     floatingActionButton: @Composable () -> Unit = {},
     selectionMode: Boolean = false,
-    onSelectAll: (Boolean) -> Unit = {},
+    onDeselectAll: () -> Unit = {},
+    onInvertSelected: () -> Unit = {},
+    onSelectAll: () -> Unit = {},
     enableDelete: Boolean = false,
     onDelete: () -> Unit = {},
     onCancelSelection: () -> Unit = {},
@@ -41,7 +42,7 @@ fun TagScaffold(
             if (selectionMode) {
                 var selectAll by remember { mutableStateOf(false) }
 
-                CenterAlignedTopAppBar(
+                TopAppBar(
                     title = { Text(title) },
                     navigationIcon = {
                         IconButton(onClick = {
@@ -64,20 +65,28 @@ fun TagScaffold(
                             }
                         }
 
-                        IconButton(onClick = {
-                            selectAll = !selectAll
-                            onSelectAll(selectAll)
-                        }) {
+                        IconButton(onClick = onDeselectAll) {
                             Icon(
-                                painterResource(R.drawable.baseline_checklist_rtl_24),
-                                contentDescription = "Select All",
-                                tint = if (selectAll) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                painterResource(R.drawable.baseline_deselect_24),
+                                contentDescription = "Deselect All"
+                            )
+                        }
+                        IconButton(onClick = onInvertSelected) {
+                            Icon(
+                                painterResource(R.drawable.baseline_flip_to_back_24),
+                                contentDescription = "Inverse Selected"
+                            )
+                        }
+                        IconButton(onClick = onSelectAll) {
+                            Icon(
+                                painterResource(R.drawable.baseline_select_all_24),
+                                contentDescription = "Select All"
                             )
                         }
                     }
                 )
             } else {
-                CenterAlignedTopAppBar(
+                TopAppBar(
                     title = { Text(title) },
                     navigationIcon = { BackButton(navController) },
                 )

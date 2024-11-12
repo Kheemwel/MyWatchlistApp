@@ -66,12 +66,20 @@ fun GenresScreen(navController: NavController, viewModel: GenreModel) {
         )
     },
         selectionMode = selectionMode,
-        onSelectAll = { selectAll ->
-            if (selectAll) {
-                selectedItems.clear()
-                selectedItems.addAll(genres.indices)
-            } else {
-                selectedItems.clear()
+        onDeselectAll = {
+            selectedItems.clear()
+        },
+        onInvertSelected = {
+            val newList = genres.indices.filterNot { it in selectedItems }
+            selectedItems.apply {
+                clear()
+                addAll(newList)
+            }
+        },
+        onSelectAll = {
+            selectedItems.apply {
+                clear()
+                addAll(genres.indices)
             }
         },
         enableDelete = selectionMode && !selectedItems.isEmpty(),

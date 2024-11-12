@@ -66,12 +66,20 @@ fun StatusesScreen(navController: NavController, viewModel: StatusModel) {
         )
     },
         selectionMode = selectionMode,
-        onSelectAll = { selectAll ->
-            if (selectAll) {
-                selectedItems.clear()
-                selectedItems.addAll(statuses.indices)
-            } else {
-                selectedItems.clear()
+        onDeselectAll = {
+            selectedItems.clear()
+        },
+        onInvertSelected = {
+            val newList = statuses.indices.filterNot { it in selectedItems }
+            selectedItems.apply {
+                clear()
+                addAll(newList)
+            }
+        },
+        onSelectAll = {
+            selectedItems.apply {
+                clear()
+                addAll(statuses.indices)
             }
         },
         enableDelete = selectionMode && !selectedItems.isEmpty(),

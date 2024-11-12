@@ -66,12 +66,20 @@ fun CountriesScreen(navController: NavController, viewModel: CountryModel) {
         )
     },
         selectionMode = selectionMode,
-        onSelectAll = { selectAll ->
-            if (selectAll) {
-                selectedItems.clear()
-                selectedItems.addAll(countries.indices)
-            } else {
-                selectedItems.clear()
+        onDeselectAll = {
+            selectedItems.clear()
+        },
+        onInvertSelected = {
+            val newList = countries.indices.filterNot { it in selectedItems }
+            selectedItems.apply {
+                clear()
+                addAll(newList)
+            }
+        },
+        onSelectAll = {
+            selectedItems.apply {
+                clear()
+                addAll(countries.indices)
             }
         },
         enableDelete = selectionMode && !selectedItems.isEmpty(),
