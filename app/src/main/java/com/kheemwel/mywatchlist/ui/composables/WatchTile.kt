@@ -45,7 +45,12 @@ fun WatchTile(
             if (isFavorite) {
                 Icon(
                     Icons.Filled.Star,
-                    contentDescription = "Genre",
+                    contentDescription = "Favorite",
+                )
+            } else {
+                Icon(
+                    painterResource(R.drawable.baseline_star_border_24),
+                    contentDescription = "Not Favorite"
                 )
             }
         },
@@ -75,7 +80,7 @@ fun WatchTile(
                             if (isFavorite) {
                                 Icon(
                                     painterResource(R.drawable.baseline_star_border_24),
-                                    contentDescription = "Remove To Favorite"
+                                    contentDescription = "Remove From Favorite"
                                 )
                             } else {
                                 Icon(
@@ -86,6 +91,7 @@ fun WatchTile(
                         },
                         text = { Text("${if (isFavorite) "Remove from" else "Add  to"} favorites") },
                         onClick = {
+                            openMenu = false
                             onFavorite()
                         })
                     DropdownMenuItem(leadingIcon = {

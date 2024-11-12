@@ -1,36 +1,33 @@
 package com.kheemwel.mywatchlist.ui.screens.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -47,8 +44,8 @@ import com.kheemwel.mywatchlist.data.models.Series
 import com.kheemwel.mywatchlist.data.models.SeriesModel
 import com.kheemwel.mywatchlist.data.models.StatusModel
 import com.kheemwel.mywatchlist.ui.composables.ConfirmationDialog
-import com.kheemwel.mywatchlist.ui.composables.HomeScaffold
-import com.kheemwel.mywatchlist.ui.composables.WatchTile
+import com.kheemwel.mywatchlist.utils.generateDummyMovies
+import com.kheemwel.mywatchlist.utils.generateDummySeries
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -164,13 +161,108 @@ fun HomeScreen(
         }
     }
 
+    var selectionMode by remember { mutableStateOf(false) }
+    val movieUUIDs = filteredMovies.map { it.uuid }
+    val selectedMoviesList = remember { mutableStateListOf<String>() }
+    val seriesUUIDs = filteredSeries.map { it.uuid }
+    val selectedSeriesList = remember { mutableStateListOf<String>() }
+    var showDeleteSelectedDialog by remember { mutableStateOf(false) }
+    val selectedItems = selectedMoviesList.size + selectedSeriesList.size
+    val title = if (selectionMode) {
+        "Selected $selectedItems ${if (selectedItems == 1) "item" else "items"}"
+    } else {
+        "My Watchlist"
+    }
+
+    BackHandler(enabled = selectionMode) {
+        selectionMode = false
+        selectedMoviesList.clear()
+        selectedSeriesList.clear()
+    }
+
     HomeScaffold(
-        navController,
+        navController = navController,
+        title = title,
+        selectionMode = selectionMode,
+        onDeselectAll = {
+            when (pagerState.currentPage) {
+                0 -> {
+                    selectedMoviesList.clear()
+                }
+
+                1 -> {
+                    selectedSeriesList.clear()
+                }
+            }
+        },
+        onInvertSelected = {
+            when (pagerState.currentPage) {
+                0 -> {
+                    val newList = movieUUIDs.filterNot { it in selectedMoviesList }
+                    selectedMoviesList.apply {
+                        clear()
+                        addAll(newList)
+                    }
+                }
+
+                1 -> {
+                    val newList = seriesUUIDs.filterNot { it in selectedSeriesList }
+                    selectedSeriesList.apply {
+                        clear()
+                        addAll(newList)
+                    }
+                }
+            }
+        },
+        onSelectAll = {
+            when (pagerState.currentPage) {
+                0 -> {
+                    selectedMoviesList.apply {
+                        clear()
+                        addAll(movieUUIDs)
+                    }
+                }
+
+                1 -> {
+                    selectedSeriesList.apply {
+                        clear()
+                        addAll(seriesUUIDs)
+                    }
+                }
+            }
+        },
+        enableDelete = selectionMode && selectedItems > 0,
+        onDelete = {
+            showDeleteSelectedDialog = true
+        },
+        onCancelSelection = {
+            selectionMode = false
+            selectedMoviesList.clear()
+            selectedSeriesList.clear()
+        },
         onSearch = { searchText = it },
         isFilterActive = filter.genres.isNotEmpty() || filter.statuses.isNotEmpty() || filter.countries.isNotEmpty(),
         onFilter = { showFilter = !showFilter },
-        onAddMovie = { showAddMovie = true },
-        onAddSeries = { showAddSeries = true }
+        onAddMovie = {
+            showAddMovie = true
+            generateDummyMovies(
+                8,
+                movieModel,
+                genres.value,
+                countries.value,
+                statuses.value
+            )
+        },
+        onAddSeries = {
+            showAddSeries = true
+            generateDummySeries(
+                8,
+                seriesModel,
+                genres.value,
+                countries.value,
+                statuses.value
+            )
+        }
     ) { innerPadding ->
         if (showAddMovie) {
             AddMovieSheet(
@@ -250,6 +342,24 @@ fun HomeScreen(
             }
         }
 
+        if (showDeleteSelectedDialog) {
+            ConfirmationDialog(
+                state = showDeleteSelectedDialog,
+                title = "Delete ${selectedItems} ${if (selectedItems == 1) "item" else "items"}",
+                message = "Are you sure you want to delete ${if (selectedItems == 1) "this selected item" else "these selected items"}?",
+                onDismiss = { showDeleteSelectedDialog = false },
+                onCancelText = "Cancel",
+                onCancel = { showDeleteSelectedDialog = false },
+                onConfirmText = "Ok"
+            ) {
+                movieModel.deleteMovies(selectedMoviesList)
+                seriesModel.deleteSeries(selectedSeriesList)
+                selectedMoviesList.clear()
+                selectedSeriesList.clear()
+                showDeleteSelectedDialog = false
+            }
+        }
+
         if (showFilter) {
             FilterSheet(
                 filterState,
@@ -286,7 +396,7 @@ fun HomeScreen(
                     }
                 }
             ) {
-                HomeTab(
+                HomePrimaryTab(
                     title = "Movie",
                     badge = if (filteredMovies.size > 999) "999+" else filteredMovies.size.toString(),
                     icon = {
@@ -302,7 +412,7 @@ fun HomeScreen(
                     }
                 }
 
-                HomeTab(
+                HomePrimaryTab(
                     title = "Series",
                     badge = if (filteredSeries.size > 999) "999+" else filteredSeries.size.toString(),
                     icon = {
@@ -319,11 +429,25 @@ fun HomeScreen(
                 }
             }
 
-            HorizontalPager(state = pagerState) { page ->
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.Top
+            ) { page ->
                 when (page) {
                     0 -> MovieTab(
-                        movieModel,
-                        filteredMovies,
+                        movieModel = movieModel,
+                        movies = filteredMovies,
+                        selectionMode = selectionMode,
+                        enableSelectionMode = { selectionMode = true },
+                        selectedItems = selectedMoviesList,
+                        onItemSelected = {
+                            if (selectedMoviesList.contains(it)) {
+                                selectedMoviesList.remove(it)
+                            } else {
+                                selectedMoviesList.add(it)
+                            }
+                        },
                         onView = {
                             selectedMovie = it
                             editMode = false
@@ -337,11 +461,22 @@ fun HomeScreen(
                         onDelete = {
                             selectedMovie = it
                             showDeleteMovieDialog = true
-                        })
+                        },
+                    )
 
                     1 -> SeriesTab(
-                        seriesModel,
-                        filteredSeries,
+                        seriesModel = seriesModel,
+                        series = filteredSeries,
+                        selectionMode = selectionMode,
+                        enableSelectionMode = { selectionMode = true },
+                        selectedItems = selectedSeriesList,
+                        onItemSelected = {
+                            if (selectedSeriesList.contains(it)) {
+                                selectedSeriesList.remove(it)
+                            } else {
+                                selectedSeriesList.add(it)
+                            }
+                        },
                         onView = {
                             selectedSeries = it
                             editMode = false
@@ -355,90 +490,10 @@ fun HomeScreen(
                         onDelete = {
                             selectedSeries = it
                             showDeleteSeriesDialog = true
-                        })
+                        }
+                    )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun HomeTab(
-    title: String,
-    badge: String,
-    icon: @Composable (() -> Unit)? = null,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    Tab(
-        text = {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(title)
-                Text(
-                    text = badge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
-                        .padding(horizontal = 6.dp)
-                )
-            }
-        },
-        icon = icon,
-        selected = selected,
-        onClick = onClick,
-        selectedContentColor = MaterialTheme.colorScheme.primary,
-        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-    )
-}
-
-@Composable
-private fun MovieTab(
-    movieModel: MovieModel,
-    movies: List<Movie>,
-    onView: (Movie) -> Unit,
-    onEdit: (Movie) -> Unit,
-    onDelete: (Movie) -> Unit
-) {
-    LazyColumn {
-        items(movies) { movie ->
-            WatchTile(
-                text = movie.title,
-                status = movie.status,
-                isFavorite = movie.isFavorite,
-                onFavorite = { movieModel.toggleFavorite(movie.uuid) },
-                onEdit = { onEdit(movie) },
-                onDelete = { onDelete(movie) },
-                onClick = { onView(movie) }
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(150.dp))
-        }
-    }
-}
-
-@Composable
-private fun SeriesTab(
-    seriesModel: SeriesModel,
-    series: List<Series>,
-    onView: (Series) -> Unit,
-    onEdit: (Series) -> Unit,
-    onDelete: (Series) -> Unit
-) {
-    LazyColumn {
-        items(series) { series ->
-            WatchTile(
-                text = series.title,
-                status = series.status,
-                isFavorite = series.isFavorite,
-                onFavorite = { seriesModel.toggleFavorite(series.uuid) },
-                onEdit = { onEdit(series) },
-                onDelete = { onDelete(series) },
-                onClick = { onView(series) }
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(150.dp))
         }
     }
 }
