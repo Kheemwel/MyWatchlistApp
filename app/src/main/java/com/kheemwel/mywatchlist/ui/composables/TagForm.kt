@@ -65,6 +65,7 @@ fun TagForm(
             },
             onDismissRequest = {
                 onCancel()
+                text = text.copy(text = "")
             },
             confirmButton = {
                 TextButton(
@@ -72,6 +73,7 @@ fun TagForm(
                         .isNotEmpty() && !isError && (initialValue.trim() != text.text.trim()),
                     onClick = {
                         onConfirm(text.text.trim())
+                        text = text.copy(text = "")
                     }
                 ) {
                     Text(confirmText)
@@ -81,6 +83,7 @@ fun TagForm(
                 TextButton(
                     onClick = {
                         onCancel()
+                        text = text.copy(text = "")
                     }
                 ) {
                     Text(cancelText)

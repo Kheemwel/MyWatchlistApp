@@ -68,13 +68,19 @@ fun TagTile(
                             Icons.Filled.Edit,
                             contentDescription = "Edit"
                         )
-                    }, text = { Text("Rename") }, onClick = { onRename() })
+                    }, text = { Text("Rename") }, onClick = {
+                        openMenu = false
+                        onRename()
+                    })
                     DropdownMenuItem(leadingIcon = {
                         Icon(
                             Icons.Filled.Delete,
                             contentDescription = "Delete"
                         )
-                    }, text = { Text("Delete") }, onClick = { onDelete() })
+                    }, text = { Text("Delete") }, onClick = {
+                        openMenu = false
+                        onDelete()
+                    })
                 }
             }
         }
