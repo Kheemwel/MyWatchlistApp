@@ -4,18 +4,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Checkbox
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -26,10 +34,10 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -85,17 +93,17 @@ fun FilterSheet(
             }
         }
 
-        HorizontalPager(state = pagerState) { page ->
+        HorizontalPager(state = pagerState, verticalAlignment = Alignment.Top) { page ->
             when (page) {
-                0 -> StatusTab(statuses, filter.statuses) {
+                0 -> TagsTab(statuses, filter.statuses) {
                     onFilterChange(filter.copy(statuses = it))
                 }
 
-                1 -> GenreTab(genres, filter.genres) {
+                1 -> TagsTab(genres, filter.genres) {
                     onFilterChange(filter.copy(genres = it))
                 }
 
-                2 -> CountryTab(countries, filter.countries) {
+                2 -> TagsTab(countries, filter.countries) {
                     onFilterChange(filter.copy(countries = it))
                 }
 
@@ -113,103 +121,47 @@ fun FilterSheet(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-private fun StatusTab(
-    statuses: List<String>,
+private fun TagsTab(
+    items: List<String>,
     initialValues: List<String> = emptyList(),
     onItemsSelected: (List<String>) -> Unit
 ) {
-    val selectedItems = remember(initialValues) { mutableStateListOf<String>() }
-    LaunchedEffect(initialValues) {
-        selectedItems.addAll(initialValues)
-    }
+    val selectedItems = remember(initialValues) { mutableStateListOf<String>().also { it.addAll(initialValues) } }
 
-    LazyColumn {
-        items(statuses) { status ->
-            ListItem(
-                modifier = Modifier.clickable {
-                    if (selectedItems.contains(status)) {
-                        selectedItems.remove(status)
+    FlowRow(
+        modifier = Modifier
+            .padding(8.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items.forEach { item ->
+            val selected = selectedItems.contains(item)
+            FilterChip(
+                onClick = {
+                    if (selected) {
+                        selectedItems.remove(item)
                     } else {
-                        selectedItems.add(status)
+                        selectedItems.add(item)
                     }
                     onItemsSelected(selectedItems)
                 },
-                leadingContent = {
-                    Checkbox(
-                        checked = selectedItems.contains(status),
-                        onCheckedChange = null
-                    )
+                label = {
+                    Text(item)
                 },
-                headlineContent = { Text(status) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun GenreTab(
-    genres: List<String>,
-    initialValues: List<String> = emptyList(),
-    onItemsSelected: (List<String>) -> Unit
-) {
-    val selectedItems = remember(initialValues) { mutableStateListOf<String>() }
-    LaunchedEffect(initialValues) {
-        selectedItems.addAll(initialValues)
-    }
-
-    LazyColumn {
-        items(genres) { genre ->
-            ListItem(
-                modifier = Modifier.clickable {
-                    if (selectedItems.contains(genre)) {
-                        selectedItems.remove(genre)
-                    } else {
-                        selectedItems.add(genre)
+                selected = selected,
+                leadingIcon = if (selected) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "Selected",
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
                     }
-                    onItemsSelected(selectedItems)
+                } else {
+                    null
                 },
-                leadingContent = {
-                    Checkbox(
-                        checked = selectedItems.contains(genre),
-                        onCheckedChange = null
-                    )
-                },
-                headlineContent = { Text(genre) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun CountryTab(
-    countries: List<String>,
-    initialValues: List<String> = emptyList(),
-    onItemsSelected: (List<String>) -> Unit
-) {
-    val selectedItems = remember(initialValues) { mutableStateListOf<String>() }
-    LaunchedEffect(initialValues) {
-        selectedItems.addAll(initialValues)
-    }
-
-    LazyColumn {
-        items(countries) { country ->
-            ListItem(
-                modifier = Modifier.clickable {
-                    if (selectedItems.contains(country)) {
-                        selectedItems.remove(country)
-                    } else {
-                        selectedItems.add(country)
-                    }
-                    onItemsSelected(selectedItems)
-                },
-                leadingContent = {
-                    Checkbox(
-                        checked = selectedItems.contains(country),
-                        onCheckedChange = null
-                    )
-                },
-                headlineContent = { Text(country) }
             )
         }
     }
