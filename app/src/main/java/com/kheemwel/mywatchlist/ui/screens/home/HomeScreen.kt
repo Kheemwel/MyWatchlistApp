@@ -296,52 +296,46 @@ fun HomeScreen(
             }
         }
 
-        if (showDeleteMovieDialog) {
-            ConfirmationDialog(
-                state = showDeleteMovieDialog,
-                title = "Delete Movie",
-                message = "Are you sure you want to delete the movie \"${selectedMovie?.title}\"?",
-                onDismiss = { showDeleteMovieDialog = false },
-                onCancelText = "Cancel",
-                onCancel = { showDeleteMovieDialog = false },
-                onConfirmText = "Ok"
-            ) {
-                selectedMovie?.let { movieModel.deleteMovie(it.uuid) }
-                showDeleteMovieDialog = false
-            }
+        ConfirmationDialog(
+            state = showDeleteMovieDialog,
+            title = "Delete Movie",
+            message = "Are you sure you want to delete the movie \"${selectedMovie?.title}\"?",
+            onDismiss = { showDeleteMovieDialog = false },
+            onCancelText = "Cancel",
+            onCancel = { showDeleteMovieDialog = false },
+            onConfirmText = "Ok"
+        ) {
+            selectedMovie?.let { movieModel.deleteMovie(it.uuid) }
+            showDeleteMovieDialog = false
         }
 
-        if (showDeleteSeriesDialog) {
-            ConfirmationDialog(
-                state = showDeleteSeriesDialog,
-                title = "Delete Series",
-                message = "Are you sure you want to delete the series \"${selectedSeries?.title}\"?",
-                onDismiss = { showDeleteSeriesDialog = false },
-                onCancelText = "Cancel",
-                onCancel = { showDeleteSeriesDialog = false },
-                onConfirmText = "Ok"
-            ) {
-                selectedSeries?.let { seriesModel.deleteSeries(it.uuid) }
-                showDeleteSeriesDialog = false
-            }
+        ConfirmationDialog(
+            state = showDeleteSeriesDialog,
+            title = "Delete Series",
+            message = "Are you sure you want to delete the series \"${selectedSeries?.title}\"?",
+            onDismiss = { showDeleteSeriesDialog = false },
+            onCancelText = "Cancel",
+            onCancel = { showDeleteSeriesDialog = false },
+            onConfirmText = "Ok"
+        ) {
+            selectedSeries?.let { seriesModel.deleteSeries(it.uuid) }
+            showDeleteSeriesDialog = false
         }
 
-        if (showDeleteSelectedDialog) {
-            ConfirmationDialog(
-                state = showDeleteSelectedDialog,
-                title = "Delete ${selectedItems} ${if (selectedItems == 1) "item" else "items"}",
-                message = "Are you sure you want to delete ${if (selectedItems == 1) "this selected item" else "these selected items"}?",
-                onDismiss = { showDeleteSelectedDialog = false },
-                onCancelText = "Cancel",
-                onCancel = { showDeleteSelectedDialog = false },
-                onConfirmText = "Ok"
-            ) {
-                movieModel.deleteMovies(selectedMoviesList)
-                seriesModel.deleteSeries(selectedSeriesList)
-                selectedMoviesList.clear()
-                selectedSeriesList.clear()
-                showDeleteSelectedDialog = false
-            }
+        ConfirmationDialog(
+            state = showDeleteSelectedDialog,
+            title = "Delete $selectedItems ${if (selectedItems == 1) "item" else "items"}",
+            message = "Are you sure you want to delete ${if (selectedItems == 1) "this selected item" else "these selected items"}?",
+            onDismiss = { showDeleteSelectedDialog = false },
+            onCancelText = "Cancel",
+            onCancel = { showDeleteSelectedDialog = false },
+            onConfirmText = "Ok"
+        ) {
+            movieModel.deleteMovies(selectedMoviesList)
+            seriesModel.deleteSeries(selectedSeriesList)
+            selectedMoviesList.clear()
+            selectedSeriesList.clear()
+            showDeleteSelectedDialog = false
         }
 
         if (showFilter) {

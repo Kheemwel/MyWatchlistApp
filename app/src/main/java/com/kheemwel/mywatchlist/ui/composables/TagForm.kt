@@ -27,7 +27,7 @@ fun TagForm(
     onTextChange: (text: String) -> Unit,
     cancelText: String = "Cancel",
     onCancel: () -> Unit = {},
-    confirmText: String = "Confirm",
+    confirmText: String = "Save",
     onConfirm: (text: String) -> Unit
 ) {
     var text by remember(initialValue) {

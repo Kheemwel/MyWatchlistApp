@@ -71,21 +71,19 @@ fun AddSeriesSheet(
         dragHandle = null,
         onDismissRequest = onDismiss
     ) {
-        if (showConfirmationDialog) {
-            ConfirmationDialog(
-                state = showConfirmationDialog,
-                title = "Discard Changes",
-                message = "Are you sure you want to discard this series?",
-                onDismiss = { showConfirmationDialog = false },
-                onCancelText = "Discard",
-                onCancel = {
-                    showConfirmationDialog = false
-                    onDismiss()
-                },
-                onConfirmText = "Keep Editing"
-            ) {
+        ConfirmationDialog(
+            state = showConfirmationDialog,
+            title = "Discard Changes",
+            message = "Are you sure you want to discard this series?",
+            onDismiss = { showConfirmationDialog = false },
+            onCancelText = "Discard",
+            onCancel = {
                 showConfirmationDialog = false
-            }
+                onDismiss()
+            },
+            onConfirmText = "Keep Editing"
+        ) {
+            showConfirmationDialog = false
         }
 
         LazyColumn(
@@ -218,21 +216,19 @@ fun ViewEditSeriesSheet(
         dragHandle = null,
         onDismissRequest = onDismiss
     ) {
-        if (showExitDialog) {
-            ConfirmationDialog(
-                state = showExitDialog,
-                title = "Discard Changes",
-                message = "Are you sure you want to discard this series?",
-                onDismiss = { showExitDialog = false },
-                onCancelText = "Discard",
-                onCancel = {
-                    showExitDialog = false
-                    onDismiss()
-                },
-                onConfirmText = "Keep Editing"
-            ) {
+        ConfirmationDialog(
+            state = showExitDialog,
+            title = "Discard Changes",
+            message = "Are you sure you want to discard this series?",
+            onDismiss = { showExitDialog = false },
+            onCancelText = "Discard",
+            onCancel = {
                 showExitDialog = false
-            }
+                onDismiss()
+            },
+            onConfirmText = "Keep Editing"
+        ) {
+            showExitDialog = false
         }
 
         if (series != null) {
@@ -271,22 +267,20 @@ private fun ViewSeries(
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    if (showDeleteDialog) {
-        ConfirmationDialog(
-            state = showDeleteDialog,
-            title = "Delete Series",
-            message = "Are you sure you want to delete this series?",
-            onDismiss = { showDeleteDialog = false },
-            onCancelText = "Cancel",
-            onCancel = {
-                showDeleteDialog = false
-            },
-            onConfirmText = "Ok"
-        ) {
-            seriesModel.deleteSeries(series.uuid)
+    ConfirmationDialog(
+        state = showDeleteDialog,
+        title = "Delete Series",
+        message = "Are you sure you want to delete this series?",
+        onDismiss = { showDeleteDialog = false },
+        onCancelText = "Cancel",
+        onCancel = {
             showDeleteDialog = false
-            onExit()
-        }
+        },
+        onConfirmText = "Ok"
+    ) {
+        seriesModel.deleteSeries(series.uuid)
+        showDeleteDialog = false
+        onExit()
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -381,22 +375,20 @@ private fun EditSeries(
         releaseDate = releaseDate,
     )
 
-    if (showSaveDialog) {
-        ConfirmationDialog(
-            state = showSaveDialog,
-            title = "Save Changes",
-            message = "Are you sure you want to save changes?",
-            onDismiss = { showSaveDialog = false },
-            onCancelText = "Cancel",
-            onCancel = {
-                showSaveDialog = false
-            },
-            onConfirmText = "Ok"
-        ) {
-            seriesModel.updateSeries(series.uuid, newSeries)
+    ConfirmationDialog(
+        state = showSaveDialog,
+        title = "Save Changes",
+        message = "Are you sure you want to save changes?",
+        onDismiss = { showSaveDialog = false },
+        onCancelText = "Cancel",
+        onCancel = {
             showSaveDialog = false
-            onExit(false)
-        }
+        },
+        onConfirmText = "Ok"
+    ) {
+        seriesModel.updateSeries(series.uuid, newSeries)
+        showSaveDialog = false
+        onExit(false)
     }
 
     LazyColumn(

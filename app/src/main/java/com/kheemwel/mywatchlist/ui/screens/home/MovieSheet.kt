@@ -66,21 +66,19 @@ fun AddMovieSheet(
         dragHandle = null,
         onDismissRequest = onDismiss
     ) {
-        if (showConfirmationDialog) {
-            ConfirmationDialog(
-                state = showConfirmationDialog,
-                title = "Discard Changes",
-                message = "Are you sure you want to discard this movie?",
-                onDismiss = { showConfirmationDialog = false },
-                onCancelText = "Discard",
-                onCancel = {
-                    showConfirmationDialog = false
-                    onDismiss()
-                },
-                onConfirmText = "Keep Editing"
-            ) {
+        ConfirmationDialog(
+            state = showConfirmationDialog,
+            title = "Discard Changes",
+            message = "Are you sure you want to discard this movie?",
+            onDismiss = { showConfirmationDialog = false },
+            onCancelText = "Discard",
+            onCancel = {
                 showConfirmationDialog = false
-            }
+                onDismiss()
+            },
+            onConfirmText = "Keep Editing"
+        ) {
+            showConfirmationDialog = false
         }
 
         LazyColumn(
@@ -191,21 +189,19 @@ fun ViewEditMovieSheet(
         dragHandle = null,
         onDismissRequest = onDismiss
     ) {
-        if (showExitDialog) {
-            ConfirmationDialog(
-                state = showExitDialog,
-                title = "Discard Changes",
-                message = "Are you sure you want to discard this movie?",
-                onDismiss = { showExitDialog = false },
-                onCancelText = "Discard",
-                onCancel = {
-                    showExitDialog = false
-                    onDismiss()
-                },
-                onConfirmText = "Keep Editing"
-            ) {
+        ConfirmationDialog(
+            state = showExitDialog,
+            title = "Discard Changes",
+            message = "Are you sure you want to discard this movie?",
+            onDismiss = { showExitDialog = false },
+            onCancelText = "Discard",
+            onCancel = {
                 showExitDialog = false
-            }
+                onDismiss()
+            },
+            onConfirmText = "Keep Editing"
+        ) {
+            showExitDialog = false
         }
 
         if (movie != null) {
@@ -244,22 +240,20 @@ private fun ViewMovie(
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    if (showDeleteDialog) {
-        ConfirmationDialog(
-            state = showDeleteDialog,
-            title = "Delete Movie",
-            message = "Are you sure you want to delete this movie?",
-            onDismiss = { showDeleteDialog = false },
-            onCancelText = "Cancel",
-            onCancel = {
-                showDeleteDialog = false
-            },
-            onConfirmText = "Ok"
-        ) {
-            movieModel.deleteMovie(movie.uuid)
+    ConfirmationDialog(
+        state = showDeleteDialog,
+        title = "Delete Movie",
+        message = "Are you sure you want to delete this movie?",
+        onDismiss = { showDeleteDialog = false },
+        onCancelText = "Cancel",
+        onCancel = {
             showDeleteDialog = false
-            onExit()
-        }
+        },
+        onConfirmText = "Ok"
+    ) {
+        movieModel.deleteMovie(movie.uuid)
+        showDeleteDialog = false
+        onExit()
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -342,22 +336,20 @@ private fun EditMovie(
         releaseDate = releaseDate,
     )
 
-    if (showSaveDialog) {
-        ConfirmationDialog(
-            state = showSaveDialog,
-            title = "Save Changes",
-            message = "Are you sure you want to save changes?",
-            onDismiss = { showSaveDialog = false },
-            onCancelText = "Cancel",
-            onCancel = {
-                showSaveDialog = false
-            },
-            onConfirmText = "Ok"
-        ) {
-            movieModel.updateMovie(movie.uuid, newMovie)
+    ConfirmationDialog(
+        state = showSaveDialog,
+        title = "Save Changes",
+        message = "Are you sure you want to save changes?",
+        onDismiss = { showSaveDialog = false },
+        onCancelText = "Cancel",
+        onCancel = {
             showSaveDialog = false
-            onExit(false)
-        }
+        },
+        onConfirmText = "Ok"
+    ) {
+        movieModel.updateMovie(movie.uuid, newMovie)
+        showSaveDialog = false
+        onExit(false)
     }
 
     LazyColumn(
