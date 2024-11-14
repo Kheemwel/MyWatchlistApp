@@ -54,4 +54,15 @@ class GenreModel : ViewModel() {
     private fun save() {
         SharedPref.setGenres(_genres.value)
     }
+
+    fun saveGenres(genres: List<String>, action: DataAction) {
+        val currentGenres = _genres.value
+        val updatedGenres = when (action) {
+            DataAction.Overwrite -> genres
+            DataAction.Merge -> (currentGenres + genres).distinct()
+            DataAction.Append -> (currentGenres + genres).distinct()
+        }
+        _genres.value = updatedGenres
+        save()
+    }
 }

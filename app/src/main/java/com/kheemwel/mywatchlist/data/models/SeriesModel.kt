@@ -82,4 +82,15 @@ class SeriesModel : ViewModel() {
     private fun save() {
         SharedPref.setSeries(_series.value)
     }
+
+    fun saveSeries(series: List<Series>, action: DataAction) {
+        val currentSeries = _series.value
+        val updatedSeries = when (action) {
+            DataAction.Overwrite -> series
+            DataAction.Merge -> (currentSeries + series).distinct()
+            DataAction.Append -> currentSeries + series
+        }
+        _series.value = updatedSeries
+        save()
+    }
 }

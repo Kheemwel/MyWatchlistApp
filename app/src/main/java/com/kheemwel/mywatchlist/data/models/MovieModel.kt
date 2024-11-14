@@ -80,4 +80,15 @@ class MovieModel : ViewModel() {
     private fun save() {
         SharedPref.setMovies(_movies.value)
     }
+
+    fun saveMovies(movies: List<Movie>, action: DataAction) {
+        val currentMovies = _movies.value
+        val updatedMovies = when (action) {
+            DataAction.Overwrite -> movies
+            DataAction.Merge -> (currentMovies + movies).distinct()
+            DataAction.Append -> currentMovies + movies
+        }
+        _movies.value = updatedMovies
+        save()
+    }
 }

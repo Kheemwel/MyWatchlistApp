@@ -54,4 +54,15 @@ class StatusModel : ViewModel() {
     private fun save() {
         SharedPref.setStatuses(_statuses.value)
     }
+
+    fun saveStatuses(statuses: List<String>, action: DataAction) {
+        val currentStatuses = _statuses.value
+        val updatedStatuses = when (action) {
+            DataAction.Overwrite -> statuses
+            DataAction.Merge -> (currentStatuses + statuses).distinct()
+            DataAction.Append -> (currentStatuses + statuses).distinct()
+        }
+        _statuses.value = updatedStatuses
+        save()
+    }
 }

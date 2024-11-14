@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 fun NavigationScaffold(
     navController: NavController,
     title: String,
+    snackbarHost: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
@@ -25,6 +26,7 @@ fun NavigationScaffold(
                 navigationIcon = { BackButton(navController) },
             )
         },
+        snackbarHost = snackbarHost,
         content = content
     )
 }

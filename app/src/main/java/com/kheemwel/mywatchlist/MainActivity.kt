@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kheemwel.mywatchlist.data.database.SharedPref
+import com.kheemwel.mywatchlist.data.models.AppDataModel
 import com.kheemwel.mywatchlist.data.models.CountryModel
 import com.kheemwel.mywatchlist.data.models.GenreModel
 import com.kheemwel.mywatchlist.data.models.MovieModel
@@ -54,6 +55,7 @@ private fun Main() {
     val statusModel = StatusModel()
     val genreModel = GenreModel()
     val countryModel = CountryModel()
+    val appDataModel = AppDataModel(statusModel, genreModel, countryModel, movieModel, seriesModel)
 
     AppTheme {
         NavHost(
@@ -84,7 +86,7 @@ private fun Main() {
                     countryModel
                 )
             }
-            composable("/settings") { SettingsScreen(navController) }
+            composable("/settings") { SettingsScreen(navController, appDataModel) }
             composable("/settings/statuses") { StatusesScreen(navController, statusModel) }
             composable("/settings/genres") { GenresScreen(navController, genreModel) }
             composable("/settings/countries") { CountriesScreen(navController, countryModel) }

@@ -54,4 +54,15 @@ class CountryModel : ViewModel() {
     private fun save() {
         SharedPref.setCountries(_countries.value)
     }
+
+    fun saveCountries(countries: List<String>, action: DataAction) {
+        val currentCountries = _countries.value
+        val updatedCountries = when (action) {
+            DataAction.Overwrite -> countries
+            DataAction.Merge -> (currentCountries + countries).distinct()
+            DataAction.Append -> (currentCountries + countries).distinct()
+        }
+        _countries.value = updatedCountries
+        save()
+    }
 }
