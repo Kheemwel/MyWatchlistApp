@@ -11,6 +11,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -27,10 +29,19 @@ import com.kheemwel.mywatchlist.ui.screens.SettingsScreen
 import com.kheemwel.mywatchlist.ui.screens.StatusesScreen
 import com.kheemwel.mywatchlist.ui.screens.home.HomeScreen
 import com.kheemwel.mywatchlist.ui.theme.AppTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashscreen = installSplashScreen()
+        var keepSplashScreen = true
         super.onCreate(savedInstanceState)
+        splashscreen.setKeepOnScreenCondition { keepSplashScreen }
+        lifecycleScope.launch {
+            delay(1500)
+            keepSplashScreen = false
+        }
         enableEdgeToEdge()
         setContent {
             Main()
