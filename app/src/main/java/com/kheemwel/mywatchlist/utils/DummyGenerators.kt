@@ -1,26 +1,20 @@
 package com.kheemwel.mywatchlist.utils
 
-import com.kheemwel.mywatchlist.data.models.AppData
-import com.kheemwel.mywatchlist.data.models.CountryModel
-import com.kheemwel.mywatchlist.data.models.GenreModel
-import com.kheemwel.mywatchlist.data.models.Movie
-import com.kheemwel.mywatchlist.data.models.MovieModel
-import com.kheemwel.mywatchlist.data.models.Series
-import com.kheemwel.mywatchlist.data.models.SeriesModel
-import com.kheemwel.mywatchlist.data.models.StatusModel
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.util.UUID
+import com.kheemwel.mywatchlist.domain.model.Country
+import com.kheemwel.mywatchlist.domain.model.Genre
+import com.kheemwel.mywatchlist.domain.model.Movie
+import com.kheemwel.mywatchlist.domain.model.Series
+import com.kheemwel.mywatchlist.domain.model.Status
 import kotlin.random.Random
 
-val statuses = listOf(
+val dummyStatuses = listOf(
     "Pending",
     "Still Watching",
     "Finished",
     "Waiting"
 )
 
-val genres = listOf(
+val dummyGenres = listOf(
     "SciFi",
     "Thriller",
     "Fantasy",
@@ -50,7 +44,7 @@ val genres = listOf(
 )
 
 
-val countries = listOf(
+val dummyCountries = listOf(
     "America",
     "UK",
     "Korea",
@@ -63,23 +57,16 @@ val countries = listOf(
     "India"
 )
 
-fun generateStatuses(statusModel: StatusModel) {
-    statuses.forEach {
-        statusModel.addStatus(it)
-    }
+fun generateStatuses(): List<Status> {
+    return dummyStatuses.map { Status(name = it) }
 }
 
-fun generateGenres(genreModel: GenreModel) {
-
-    genres.forEach {
-        genreModel.addGenre(it)
-    }
+fun generateGenres(): List<Genre> {
+    return dummyGenres.map { Genre(name = it) }
 }
 
-fun generateCountries(countryModel: CountryModel) {
-    countries.forEach {
-        countryModel.addCountry(it)
-    }
+fun generateCountries(): List<Country> {
+    return dummyCountries.map { Country(name = it) }
 }
 
 fun <T> generateList(count: Int, itemGenerator: (Int) -> T): List<T> {
@@ -88,50 +75,35 @@ fun <T> generateList(count: Int, itemGenerator: (Int) -> T): List<T> {
 
 fun generateMovieList(
     count: Int,
-    genreList: List<String> = genres,
-    countryList: List<String> = countries,
-    statusList: List<String> = statuses
+    statusList: List<Status>,
+    countryList: List<Country>,
+    genreList: List<Genre>
 ): List<Movie> {
     return generateList(count) {
         Movie(
-            uuid = UUID.randomUUID().toString(),
             title = generateRandomSentence(Random.nextInt(1, 4), Random.nextInt(3, 10)),
-            genres = genreList.shuffled().take(Random.nextInt(1, genres.size)),
             country = countryList.random(),
             status = statusList.random(),
+            genres = genreList.shuffled().take(Random.nextInt(1, genreList.size)),
             isFavorite = Random.nextBoolean(),
             releaseDate = generateRandomDate(),
             lastModified = generateRandomDate(),
         )
-    }
-}
-
-fun generateDummyMovies(
-    count: Int,
-    movieModel: MovieModel,
-    genres: List<String>,
-    countries: List<String>,
-    statuses: List<String>
-) {
-    val movies = generateMovieList(count, genres, countries, statuses)
-    movies.forEach {
-        movieModel.addMovie(it)
     }
 }
 
 fun generateSeriesList(
     count: Int,
-    genreList: List<String> = genres,
-    countryList: List<String> = countries,
-    statusList: List<String> = statuses
+    statusList: List<Status>,
+    countryList: List<Country>,
+    genreList: List<Genre>
 ): List<Series> {
     return generateList(count) {
         Series(
-            uuid = UUID.randomUUID().toString(),
             title = generateRandomSentence(Random.nextInt(1, 4), Random.nextInt(3, 10)),
             season = Random.nextInt(1, 16),
             episode = Random.nextInt(1, 32),
-            genres = genreList.shuffled().take(Random.nextInt(1, genres.size)),
+            genres = genreList.shuffled().take(Random.nextInt(1, genreList.size)),
             country = countryList.random(),
             status = statusList.random(),
             isFavorite = Random.nextBoolean(),
@@ -141,25 +113,6 @@ fun generateSeriesList(
     }
 }
 
-fun generateDummySeries(
-    count: Int,
-    seriesModel: SeriesModel,
-    genres: List<String>,
-    countries: List<String>,
-    statuses: List<String>
-) {
-    val series = generateSeriesList(count, genres, countries, statuses)
-    series.forEach {
-        seriesModel.addSeries(it)
-    }
-}
-
-fun generateAppDataJson(countMovies: Int = 100, countSeries: Int = 100): String {
-    val movies = generateMovieList(countMovies)
-    val series = generateSeriesList(countSeries)
-    val appData = AppData(statuses, genres, countries, movies, series)
-    return Json.encodeToString(appData)
-}
 
 fun generateRandomDate(): String {
     val year = Random.nextInt(2000, 2024).toString()
