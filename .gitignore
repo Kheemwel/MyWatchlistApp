@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+/app/release
+/.idea/vcs.xml
+/.idea/codeStyles/codeStyleConfig.xml

@@ -1,6 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    // JSON
+    id("org.jetbrains.kotlin.plugin.serialization")
+    // Hilt
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+    // DataStore Proto
+    id("com.google.protobuf")
 }
 
 android {
@@ -49,8 +56,23 @@ android {
     }
 }
 
-dependencies {
+// DataStore Proto
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.21.7"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
 
+dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,6 +81,24 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.8.3")
+    // SplashScreen
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    // JSON
+    implementation(libs.kotlinx.serialization.json)
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.49")
+    ksp("com.google.dagger:hilt-compiler:2.49")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    // Room Database
+    implementation("androidx.room:room-runtime:2.4.2")
+    ksp("androidx.room:room-compiler:2.4.2")
+    implementation("androidx.room:room-ktx:2.4.2")
+    // DataStore Proto
+    implementation("androidx.datastore:datastore:1.0.0")
+    implementation("com.google.protobuf:protobuf-javalite:3.18.0")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:3.18.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

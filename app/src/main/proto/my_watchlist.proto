@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_package = "com.kheemwel.mywatchlist";
+option java_multiple_files = true;
+
+// Enum for sorting criteria
+enum FilterSortBy {
+  TITLE = 0;
+  RELEASE_DATE = 1;
+  LAST_MODIFIED = 2;
+  FAVORITE = 3;
+}
+
+// Enum for sorting direction
+enum FilterSortDirection {
+  ASCENDING = 0;
+  DESCENDING = 1;
+}
+
+// Message for FilterWatchList
+message FilterWatchlist {
+  repeated string statuses = 1; // List of statuses
+  repeated string genres = 2; // List of genres
+  repeated string countries = 3; // List of countries
+  FilterSortBy sortBy = 4; // Sorting criteria
+  FilterSortDirection sortDirection = 5; // Sorting direction
+}
