@@ -11,7 +11,6 @@ import com.kheemwel.mywatchlist.presentation.composables.showSnackbar
 import com.kheemwel.mywatchlist.utils.update
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -58,7 +57,6 @@ class StatusesScreenViewModel @Inject constructor(
         statusesJob = useCases.getAllStatusesUseCase()
             .onStart {
                 _state.update { copy(isLoading = true) }
-                delay(3000)
             }
             .onCompletion { error ->
                 error?.message?.let { showSnackbar(snackbarHostState, it) }

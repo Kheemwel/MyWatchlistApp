@@ -122,11 +122,11 @@ fun FilterSheet(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun TagsTab(
-    items: List<String>,
-    selectedItems: List<String> = emptyList(),
-    onItemsSelected: (List<String>) -> Unit
+    tags: List<String>,
+    selectedTags: List<String> = emptyList(),
+    onTagSelected: (List<String>) -> Unit
 ) {
-    val tags = (items + selectedItems).distinct()
+    val selectedItems = selectedTags.filter { it in tags }.toMutableList()
 
     FlowRow(
         modifier = Modifier
@@ -134,20 +134,19 @@ private fun TagsTab(
             .verticalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        tags.forEach { tag ->
-            val selected = selectedItems.contains(tag)
+        tags.forEach { item ->
+            val selected = selectedItems.contains(item)
             FilterChip(
                 onClick = {
-                    val selectedTags = selectedItems.toMutableList()
                     if (selected) {
-                        selectedTags.remove(tag)
+                        selectedItems.remove(item)
                     } else {
-                        selectedTags.add(tag)
+                        selectedItems.add(item)
                     }
-                    onItemsSelected(selectedTags.toList())
+                    onTagSelected(selectedItems.toList())
                 },
                 label = {
-                    Text(tag)
+                    Text(item)
                 },
                 selected = selected,
                 leadingIcon = if (selected) {

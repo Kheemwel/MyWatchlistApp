@@ -24,7 +24,6 @@ import com.kheemwel.mywatchlist.utils.getCurrentDateTimeAsString
 import com.kheemwel.mywatchlist.utils.update
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -44,6 +43,9 @@ class HomeScreenViewModel @Inject constructor(
     private val _state = mutableStateOf(HomeScreenState())
     val state: State<HomeScreenState> = _state
 
+    private var statusesJob: Job? = null
+    private var countriesJob: Job? = null
+    private var genresJob: Job? = null
     private var moviesJob: Job? = null
     private var movieList = emptyList<Movie>()
     private var seriesJob: Job? = null
@@ -54,10 +56,9 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val statuses = getAllStatusesUseCase().firstOrNull() ?: emptyList()
-            val countries = getAllCountriesUseCase().firstOrNull() ?: emptyList()
-            val genres = getAllGenresUseCase().firstOrNull() ?: emptyList()
-            _state.update { copy(statuses = statuses, countries = countries, genres = genres) }
+            getStatuses()
+            getCountries()
+            getGenres()
             getFilterWatchlist()
             getMovies()
             getSeries()
@@ -168,6 +169,48 @@ class HomeScreenViewModel @Inject constructor(
                 event.isFavorite
             )
         }
+    }
+
+    private fun getStatuses() {
+        statusesJob?.cancel()
+        statusesJob = getAllStatusesUseCase()
+            .onStart {
+                _state.update { copy(isLoading = true) }
+            }
+            .onCompletion { error ->
+                error?.message?.let { showSnackbar(snackbarHostState, it) }
+            }
+            .onEach {
+                _state.update { copy(isLoading = false, statuses = it) }
+            }.launchIn(viewModelScope)
+    }
+
+    private fun getCountries() {
+        countriesJob?.cancel()
+        countriesJob = getAllCountriesUseCase()
+            .onStart {
+                _state.update { copy(isLoading = true) }
+            }
+            .onCompletion { error ->
+                error?.message?.let { showSnackbar(snackbarHostState, it) }
+            }
+            .onEach {
+                _state.update { copy(isLoading = false, countries = it) }
+            }.launchIn(viewModelScope)
+    }
+
+    private fun getGenres() {
+        genresJob?.cancel()
+        genresJob = getAllGenresUseCase()
+            .onStart {
+                _state.update { copy(isLoading = true) }
+            }
+            .onCompletion { error ->
+                error?.message?.let { showSnackbar(snackbarHostState, it) }
+            }
+            .onEach {
+                _state.update { copy(isLoading = false, genres = it) }
+            }.launchIn(viewModelScope)
     }
 
     private fun getMovies() {
