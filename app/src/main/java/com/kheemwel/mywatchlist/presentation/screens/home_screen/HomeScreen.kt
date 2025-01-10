@@ -237,6 +237,8 @@ fun HomeScreen(
                             HomeScreenEvent.UpdateSeries(
                                 id = state.selectedId,
                                 newTitle = state.inputTitle.trim(),
+                                newSeason = state.inputSeason,
+                                newEpisode = state.inputEpisode,
                                 newStatus = state.inputStatus,
                                 newCountry = state.inputCountry,
                                 newGenres = state.inputGenres,
