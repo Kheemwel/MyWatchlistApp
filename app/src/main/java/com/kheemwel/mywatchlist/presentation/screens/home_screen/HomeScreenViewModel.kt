@@ -477,7 +477,7 @@ class HomeScreenViewModel @Inject constructor(
     private fun toggleFavoriteMovie(movie: Movie) {
         viewModelScope.launch {
             try {
-                val updatedMovie = movie.copy(isFavorite = !movie.isFavorite)
+                val updatedMovie = movie.copy(isFavorite = !movie.isFavorite, lastModified = getCurrentDateTimeAsString())
                 movieUseCase.updateMovieUseCase(updatedMovie)
             } catch (e: Exception) {
                 e.localizedMessage?.let { showSnackbar(snackbarHostState, it) }
@@ -619,7 +619,7 @@ class HomeScreenViewModel @Inject constructor(
     private fun toggleFavoriteSeries(series: Series) {
         viewModelScope.launch {
             try {
-                val updatedSeries = series.copy(isFavorite = !series.isFavorite)
+                val updatedSeries = series.copy(isFavorite = !series.isFavorite, lastModified = getCurrentDateTimeAsString())
                 seriesUseCase.updateSeriesUseCase(updatedSeries)
             } catch (e: Exception) {
                 e.localizedMessage?.let { showSnackbar(snackbarHostState, it) }
