@@ -462,7 +462,7 @@ fun HomeScreen(
                         onEdit = {
                             viewModel.onEvent(
                                 HomeScreenEvent.ShowSeriesModal(
-                                    editMode = false,
+                                    editMode = true,
                                     id = it.id,
                                     title = it.title,
                                     season = it.season,

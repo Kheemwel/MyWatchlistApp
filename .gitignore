@@ -16,3 +16,4 @@ local.properties
 /app/release
 /.idea/vcs.xml
 /.idea/codeStyles/codeStyleConfig.xml
+/.idea/runConfigurations.xml
