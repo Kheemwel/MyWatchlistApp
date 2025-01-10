@@ -165,7 +165,7 @@ fun HomeScreen(
                         viewModel.onEvent(
                             HomeScreenEvent.UpdateMovie(
                                 id = state.selectedId,
-                                newTitle = state.inputTitle,
+                                newTitle = state.inputTitle.trim(),
                                 newStatus = state.inputStatus,
                                 newCountry = state.inputCountry,
                                 newGenres = state.inputGenres,
@@ -176,7 +176,7 @@ fun HomeScreen(
                     } else {
                         viewModel.onEvent(
                             HomeScreenEvent.AddMovie(
-                                title = state.inputTitle,
+                                title = state.inputTitle.trim(),
                                 status = state.inputStatus,
                                 country = state.inputCountry,
                                 genres = state.inputGenres,
@@ -236,7 +236,7 @@ fun HomeScreen(
                         viewModel.onEvent(
                             HomeScreenEvent.UpdateSeries(
                                 id = state.selectedId,
-                                newTitle = state.inputTitle,
+                                newTitle = state.inputTitle.trim(),
                                 newStatus = state.inputStatus,
                                 newCountry = state.inputCountry,
                                 newGenres = state.inputGenres,
@@ -247,7 +247,7 @@ fun HomeScreen(
                     } else {
                         viewModel.onEvent(
                             HomeScreenEvent.AddSeries(
-                                title = state.inputTitle,
+                                title = state.inputTitle.trim(),
                                 season = state.inputSeason,
                                 episode = state.inputEpisode,
                                 status = state.inputStatus,
