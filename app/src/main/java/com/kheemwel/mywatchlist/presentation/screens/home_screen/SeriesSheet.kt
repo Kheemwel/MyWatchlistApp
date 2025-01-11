@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -72,6 +73,7 @@ fun SeriesSheet(
     onEnterReleaseDate: (String) -> Unit,
     inputFavorite: Boolean,
     onToggleFavorite: () -> Unit,
+    onSwitchToMovie: () -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit,
     onDismiss: () -> Unit
@@ -105,6 +107,7 @@ fun SeriesSheet(
                 onEnterReleaseDate = onEnterReleaseDate,
                 inputFavorite = inputFavorite,
                 onToggleFavorite = onToggleFavorite,
+                onSwitchToMovie = onSwitchToMovie,
                 onSave = onSave,
                 onExit = onDismiss
             )
@@ -241,6 +244,7 @@ private fun AddEditSeries(
     onEnterReleaseDate: (String) -> Unit,
     inputFavorite: Boolean,
     onToggleFavorite: () -> Unit,
+    onSwitchToMovie: () -> Unit,
     onSave: () -> Unit,
     onExit: () -> Unit
 ) {
@@ -305,6 +309,12 @@ private fun AddEditSeries(
                     Icon(Icons.Filled.Close, contentDescription = "Close")
                 }
                 Spacer(modifier = Modifier.weight(1f))
+                if (selectedId == null) {
+                    Button(onClick = onSwitchToMovie) {
+                        Text("Switch to movie")
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
                 Button(
                     enabled = inputTitle.isNotBlank() && haveChanges,
                     onClick = {

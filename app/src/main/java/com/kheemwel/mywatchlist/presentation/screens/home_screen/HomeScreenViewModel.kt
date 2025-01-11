@@ -168,6 +168,9 @@ class HomeScreenViewModel @Inject constructor(
                 event.newReleaseDate,
                 event.isFavorite
             )
+
+            HomeScreenEvent.SwitchMovieModalToSeriesModal -> switchMovieModalToSeriesModal()
+            HomeScreenEvent.SwitchSeriesModalToMovieModal -> switchSeriesModalToMovieModal()
         }
     }
 
@@ -395,7 +398,8 @@ class HomeScreenViewModel @Inject constructor(
                 inputCountry = country,
                 inputGenres = genres,
                 inputFavorite = isFavorite,
-                inputReleaseDate = releaseDate
+                inputReleaseDate = releaseDate,
+                showSeriesModal = false,
             )
         }
     }
@@ -414,6 +418,10 @@ class HomeScreenViewModel @Inject constructor(
                 error = null
             )
         }
+    }
+
+    private fun switchMovieModalToSeriesModal() {
+        _state.update { copy(showMovieModal = false, showSeriesModal = true) }
     }
 
     private fun addMovie(
@@ -527,9 +535,14 @@ class HomeScreenViewModel @Inject constructor(
                 inputCountry = country,
                 inputGenres = genres,
                 inputFavorite = isFavorite,
-                inputReleaseDate = releaseDate
+                inputReleaseDate = releaseDate,
+                showMovieModal = false,
             )
         }
+    }
+
+    private fun switchSeriesModalToMovieModal() {
+        _state.update { copy(showMovieModal = true, showSeriesModal = false) }
     }
 
     private fun hideSeriesModal() {

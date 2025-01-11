@@ -160,6 +160,7 @@ fun HomeScreen(
                 },
                 inputFavorite = state.inputFavorite,
                 onToggleFavorite = { viewModel.onEvent(HomeScreenEvent.ToggleFavorite) },
+                onSwitchToSeries = { viewModel.onEvent(HomeScreenEvent.SwitchMovieModalToSeriesModal) },
                 onSave = {
                     if (state.selectedId != null) {
                         viewModel.onEvent(
@@ -231,6 +232,7 @@ fun HomeScreen(
                 },
                 inputFavorite = state.inputFavorite,
                 onToggleFavorite = { viewModel.onEvent(HomeScreenEvent.ToggleFavorite) },
+                onSwitchToMovie = { viewModel.onEvent(HomeScreenEvent.SwitchSeriesModalToMovieModal) },
                 onSave = {
                     if (state.selectedId != null) {
                         viewModel.onEvent(
