@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -33,7 +34,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.kheemwel.mywatchlist.R
 import com.kheemwel.mywatchlist.domain.model.Country
 import com.kheemwel.mywatchlist.domain.model.Genre
 import com.kheemwel.mywatchlist.domain.model.Status
@@ -66,6 +69,8 @@ fun MovieSheet(
     onEnterReleaseDate: (String) -> Unit,
     inputFavorite: Boolean,
     onToggleFavorite: () -> Unit,
+    onTransfer: () -> Unit,
+    onSwitchToSeries: () -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit,
     onDismiss: () -> Unit
@@ -95,6 +100,7 @@ fun MovieSheet(
                 onEnterReleaseDate = onEnterReleaseDate,
                 inputFavorite = inputFavorite,
                 onToggleFavorite = onToggleFavorite,
+                onSwitchToSeries = onSwitchToSeries,
                 onSave = onSave,
                 onExit = onDismiss
             )
@@ -106,6 +112,7 @@ fun MovieSheet(
                 genres = inputGenres.map { it.name },
                 releaseDate = inputReleaseDate,
                 isFavorite = inputFavorite,
+                onTransfer = onTransfer,
                 onEditMode = { onEditMode() },
                 onDelete = onDelete,
                 onExit = onDismiss
@@ -122,11 +129,13 @@ private fun ViewMovie(
     genres: List<String>,
     releaseDate: String,
     isFavorite: Boolean,
+    onTransfer: () -> Unit,
     onEditMode: () -> Unit,
     onDelete: () -> Unit,
     onExit: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showTransferToSeriesDialog by remember { mutableStateOf(false) }
 
     ConfirmationDialog(
         state = showDeleteDialog,
@@ -144,6 +153,21 @@ private fun ViewMovie(
         onExit()
     }
 
+    ConfirmationDialog(
+        state = showTransferToSeriesDialog,
+        title = "Transfer To Series",
+        message = "Do you want to transfer this movie to series?",
+        onDismiss = { showTransferToSeriesDialog = false },
+        onCancelText = "Cancel",
+        onCancel = { showTransferToSeriesDialog = false },
+        onConfirmText = "Ok"
+    ) {
+        onTransfer()
+        showTransferToSeriesDialog = false
+        onExit()
+    }
+
+
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
             Row(modifier = Modifier.padding(16.dp)) {
@@ -154,6 +178,10 @@ private fun ViewMovie(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Row {
+                    IconButton(onClick = { showTransferToSeriesDialog = true }) {
+                        Icon(painterResource(R.drawable.baseline_swap_horiz_24), contentDescription = "Transfer")
+                    }
+
                     IconButton(onClick = onEditMode) {
                         Icon(Icons.Filled.Edit, contentDescription = "Edit")
                     }
@@ -215,8 +243,9 @@ private fun AddEditMovie(
     onEnterReleaseDate: (String) -> Unit,
     inputFavorite: Boolean,
     onToggleFavorite: () -> Unit,
+    onSwitchToSeries: () -> Unit,
     onSave: () -> Unit,
-    onExit: () -> Unit
+    onExit: () -> Unit,
 ) {
     val initialInputTitle = remember { inputTitle }
     val initialInputStatus = remember { inputStatus }
@@ -276,6 +305,12 @@ private fun AddEditMovie(
                     Icon(Icons.Filled.Close, contentDescription = "Close")
                 }
                 Spacer(modifier = Modifier.weight(1f))
+                if (selectedId == null) {
+                    Button(onClick = onSwitchToSeries) {
+                        Text("Switch to Series")
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
                 Button(
                     enabled = inputTitle.isNotBlank() && haveChanges,
                     onClick = {

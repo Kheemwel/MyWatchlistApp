@@ -19,6 +19,7 @@ import com.kheemwel.mywatchlist.domain.usecase.genre_usecase.GetAllGenresUseCase
 import com.kheemwel.mywatchlist.domain.usecase.movie_usecase.MovieUseCases
 import com.kheemwel.mywatchlist.domain.usecase.series_usecase.SeriesUseCases
 import com.kheemwel.mywatchlist.domain.usecase.status_usecase.GetAllStatusesUseCase
+import com.kheemwel.mywatchlist.domain.usecase.transfer_watchlist_usecase.TransferWatchlistUseCases
 import com.kheemwel.mywatchlist.presentation.composables.showSnackbar
 import com.kheemwel.mywatchlist.utils.getCurrentDateTimeAsString
 import com.kheemwel.mywatchlist.utils.update
@@ -39,6 +40,7 @@ class HomeScreenViewModel @Inject constructor(
     private val getAllCountriesUseCase: GetAllCountriesUseCase,
     private val getAllGenresUseCase: GetAllGenresUseCase,
     private val filterUseCase: FilterWatchlistUseCases,
+    private val transferWatchlistUseCase: TransferWatchlistUseCases
 ) : ViewModel() {
     private val _state = mutableStateOf(HomeScreenState())
     val state: State<HomeScreenState> = _state
@@ -112,7 +114,11 @@ class HomeScreenViewModel @Inject constructor(
             is HomeScreenEvent.SelectStatus -> selectStatus(event.status)
             is HomeScreenEvent.ShowDeleteMovieDialog -> showDeleteMovieDialog(event.id, event.title)
             HomeScreenEvent.ShowDeleteSelectedDialog -> showDeleteSelectedDialog()
-            is HomeScreenEvent.ShowDeleteSeriesDialog -> showDeleteSeriesDialog(event.id, event.title)
+            is HomeScreenEvent.ShowDeleteSeriesDialog -> showDeleteSeriesDialog(
+                event.id,
+                event.title
+            )
+
             is HomeScreenEvent.ShowMovieModal -> showMovieModal(
                 event.editMode,
                 event.id,
@@ -168,6 +174,15 @@ class HomeScreenViewModel @Inject constructor(
                 event.newReleaseDate,
                 event.isFavorite
             )
+
+            HomeScreenEvent.SwitchMovieModalToSeriesModal -> switchMovieModalToSeriesModal()
+            HomeScreenEvent.SwitchSeriesModalToMovieModal -> switchSeriesModalToMovieModal()
+            is HomeScreenEvent.TransferToMovie -> transferToMovie(event.id)
+            is HomeScreenEvent.TransferToSeries -> transferToSeries(event.id)
+            is HomeScreenEvent.ShowTransferToMovieDialog -> showTransferToMovieDialog(event.id, event.title)
+            is HomeScreenEvent.ShowTransferToSeriesDialog -> showTransferToSeriesDialog(event.id, event.title)
+            HomeScreenEvent.HideTransferToMovieDialog -> hideTransferToMovieDialog()
+            HomeScreenEvent.HideTransferToSeriesDialog -> hideTransferToSeriesDialog()
         }
     }
 
@@ -297,7 +312,11 @@ class HomeScreenViewModel @Inject constructor(
         filterSeries("", stateValue.filterWatchlist, seriesList)
     }
 
-    private fun filterMovies(searchText: String, filterWatchlist: FilterWatchlist, movies: List<Movie>) {
+    private fun filterMovies(
+        searchText: String,
+        filterWatchlist: FilterWatchlist,
+        movies: List<Movie>
+    ) {
         val filteredMovies = movies.filter { movie ->
             // Search Text Filter
             (searchText.isEmpty() ||
@@ -306,7 +325,11 @@ class HomeScreenViewModel @Inject constructor(
                     movie.status?.name?.contains(searchText, ignoreCase = true) == true ||
                     movie.country?.name?.contains(searchText, ignoreCase = true) == true) &&
                     // Genres Filter
-                    (filterWatchlist.genres.isEmpty() || movie.genres.any { filterWatchlist.genres.contains(it.name) }) &&
+                    (filterWatchlist.genres.isEmpty() || movie.genres.any {
+                        filterWatchlist.genres.contains(
+                            it.name
+                        )
+                    }) &&
                     // Status Filter
                     (filterWatchlist.statuses.isEmpty() || filterWatchlist.statuses.contains(movie.status?.name)) &&
                     // Countries Filter
@@ -336,7 +359,11 @@ class HomeScreenViewModel @Inject constructor(
         _state.update { copy(movies = filteredMovies) }
     }
 
-    private fun filterSeries(searchText: String, filterWatchlist: FilterWatchlist, series: List<Series>) {
+    private fun filterSeries(
+        searchText: String,
+        filterWatchlist: FilterWatchlist,
+        series: List<Series>
+    ) {
         val filteredSeries = series.filter { serie ->
             // Search Text Filter
             (searchText.isEmpty() ||
@@ -345,7 +372,11 @@ class HomeScreenViewModel @Inject constructor(
                     serie.status?.name?.contains(searchText, ignoreCase = true) == true ||
                     serie.country?.name?.contains(searchText, ignoreCase = true) == true) &&
                     // Genres Filter
-                    (filterWatchlist.genres.isEmpty() || serie.genres.any { filterWatchlist.genres.contains(it.name) }) &&
+                    (filterWatchlist.genres.isEmpty() || serie.genres.any {
+                        filterWatchlist.genres.contains(
+                            it.name
+                        )
+                    }) &&
                     // Status Filter
                     (filterWatchlist.statuses.isEmpty() || filterWatchlist.statuses.contains(serie.status?.name)) &&
                     // Countries Filter
@@ -395,7 +426,8 @@ class HomeScreenViewModel @Inject constructor(
                 inputCountry = country,
                 inputGenres = genres,
                 inputFavorite = isFavorite,
-                inputReleaseDate = releaseDate
+                inputReleaseDate = releaseDate,
+                showSeriesModal = false,
             )
         }
     }
@@ -414,6 +446,10 @@ class HomeScreenViewModel @Inject constructor(
                 error = null
             )
         }
+    }
+
+    private fun switchMovieModalToSeriesModal() {
+        _state.update { copy(showMovieModal = false, showSeriesModal = true) }
     }
 
     private fun addMovie(
@@ -477,7 +513,10 @@ class HomeScreenViewModel @Inject constructor(
     private fun toggleFavoriteMovie(movie: Movie) {
         viewModelScope.launch {
             try {
-                val updatedMovie = movie.copy(isFavorite = !movie.isFavorite)
+                val updatedMovie = movie.copy(
+                    isFavorite = !movie.isFavorite,
+                    lastModified = getCurrentDateTimeAsString()
+                )
                 movieUseCase.updateMovieUseCase(updatedMovie)
             } catch (e: Exception) {
                 e.localizedMessage?.let { showSnackbar(snackbarHostState, it) }
@@ -527,9 +566,14 @@ class HomeScreenViewModel @Inject constructor(
                 inputCountry = country,
                 inputGenres = genres,
                 inputFavorite = isFavorite,
-                inputReleaseDate = releaseDate
+                inputReleaseDate = releaseDate,
+                showMovieModal = false,
             )
         }
+    }
+
+    private fun switchSeriesModalToMovieModal() {
+        _state.update { copy(showMovieModal = true, showSeriesModal = false) }
     }
 
     private fun hideSeriesModal() {
@@ -619,7 +663,10 @@ class HomeScreenViewModel @Inject constructor(
     private fun toggleFavoriteSeries(series: Series) {
         viewModelScope.launch {
             try {
-                val updatedSeries = series.copy(isFavorite = !series.isFavorite)
+                val updatedSeries = series.copy(
+                    isFavorite = !series.isFavorite,
+                    lastModified = getCurrentDateTimeAsString()
+                )
                 seriesUseCase.updateSeriesUseCase(updatedSeries)
             } catch (e: Exception) {
                 e.localizedMessage?.let { showSnackbar(snackbarHostState, it) }
@@ -643,6 +690,69 @@ class HomeScreenViewModel @Inject constructor(
 
     private fun hideDeleteSeriesDialog() {
         _state.update { copy(showDeleteSeriesDialog = false, selectedId = null, inputTitle = "") }
+    }
+
+    private fun transferToMovie(id: Long) {
+        viewModelScope.launch {
+            try {
+                transferWatchlistUseCase.transferSeriesToMovie(id)
+            } catch (e: Exception) {
+                e.localizedMessage?.let { showSnackbar(snackbarHostState, it) }
+            }
+
+        }
+    }
+
+    private fun showTransferToMovieDialog(id: Long, title: String) {
+        _state.update {
+            copy(
+                showTransferToMovieDialog = true,
+                selectedId = id,
+                inputTitle = title
+            )
+        }
+    }
+
+    private fun hideTransferToMovieDialog() {
+        _state.update {
+            copy(
+                showTransferToMovieDialog = false,
+                selectedId = null,
+                inputTitle = ""
+            )
+        }
+    }
+
+
+    private fun transferToSeries(id: Long) {
+        viewModelScope.launch {
+            try {
+                transferWatchlistUseCase.transferMovieToSeries(id)
+            } catch (e: Exception) {
+                e.localizedMessage?.let { showSnackbar(snackbarHostState, it) }
+            }
+
+        }
+    }
+
+    private fun showTransferToSeriesDialog(id: Long, title: String) {
+        _state.update {
+            copy(
+                showTransferToSeriesDialog = true,
+                selectedId = id,
+                inputTitle = title
+            )
+        }
+    }
+
+    private fun hideTransferToSeriesDialog() {
+        _state.update {
+            copy(
+                showTransferToSeriesDialog = false,
+                selectedId = null,
+                inputTitle = ""
+            )
+        }
     }
 
     private fun enterTitle(title: String) {
@@ -749,7 +859,9 @@ class HomeScreenViewModel @Inject constructor(
                 val selectedMovies = _state.value.selectedMovies
                 val selectedSeries = _state.value.selectedSeries
                 if (selectedMovies.isNotEmpty()) movieUseCase.deleteManyMoviesUseCase(selectedMovies)
-                if (selectedSeries.isNotEmpty()) seriesUseCase.deleteManySeriesUseCase(selectedSeries)
+                if (selectedSeries.isNotEmpty()) seriesUseCase.deleteManySeriesUseCase(
+                    selectedSeries
+                )
             } catch (e: Exception) {
                 _state.update { copy(error = e.localizedMessage) }
             }

@@ -160,12 +160,14 @@ fun HomeScreen(
                 },
                 inputFavorite = state.inputFavorite,
                 onToggleFavorite = { viewModel.onEvent(HomeScreenEvent.ToggleFavorite) },
+                onTransfer = { state.selectedId?.let { viewModel.onEvent(HomeScreenEvent.TransferToSeries(it)) } },
+                onSwitchToSeries = { viewModel.onEvent(HomeScreenEvent.SwitchMovieModalToSeriesModal) },
                 onSave = {
                     if (state.selectedId != null) {
                         viewModel.onEvent(
                             HomeScreenEvent.UpdateMovie(
                                 id = state.selectedId,
-                                newTitle = state.inputTitle,
+                                newTitle = state.inputTitle.trim(),
                                 newStatus = state.inputStatus,
                                 newCountry = state.inputCountry,
                                 newGenres = state.inputGenres,
@@ -176,7 +178,7 @@ fun HomeScreen(
                     } else {
                         viewModel.onEvent(
                             HomeScreenEvent.AddMovie(
-                                title = state.inputTitle,
+                                title = state.inputTitle.trim(),
                                 status = state.inputStatus,
                                 country = state.inputCountry,
                                 genres = state.inputGenres,
@@ -231,12 +233,18 @@ fun HomeScreen(
                 },
                 inputFavorite = state.inputFavorite,
                 onToggleFavorite = { viewModel.onEvent(HomeScreenEvent.ToggleFavorite) },
+                onTransfer = {
+                    state.selectedId?.let { viewModel.onEvent(HomeScreenEvent.TransferToMovie(it)) }
+                },
+                onSwitchToMovie = { viewModel.onEvent(HomeScreenEvent.SwitchSeriesModalToMovieModal) },
                 onSave = {
                     if (state.selectedId != null) {
                         viewModel.onEvent(
                             HomeScreenEvent.UpdateSeries(
                                 id = state.selectedId,
-                                newTitle = state.inputTitle,
+                                newTitle = state.inputTitle.trim(),
+                                newSeason = state.inputSeason,
+                                newEpisode = state.inputEpisode,
                                 newStatus = state.inputStatus,
                                 newCountry = state.inputCountry,
                                 newGenres = state.inputGenres,
@@ -247,7 +255,7 @@ fun HomeScreen(
                     } else {
                         viewModel.onEvent(
                             HomeScreenEvent.AddSeries(
-                                title = state.inputTitle,
+                                title = state.inputTitle.trim(),
                                 season = state.inputSeason,
                                 episode = state.inputEpisode,
                                 status = state.inputStatus,
@@ -307,6 +315,32 @@ fun HomeScreen(
             viewModel.onEvent(HomeScreenEvent.DeselectAllMovies)
             viewModel.onEvent(HomeScreenEvent.DeselectAllSeries)
             viewModel.onEvent(HomeScreenEvent.HideDeleteSelectedDialog)
+        }
+
+        ConfirmationDialog(
+            state = state.showTransferToMovieDialog,
+            title = "Transfer to Movie",
+            message = "Do you want to transfer \"${state.inputTitle}\" to movie?",
+            onDismiss = { viewModel.onEvent(HomeScreenEvent.HideTransferToMovieDialog) },
+            onCancelText = "Cancel",
+            onCancel = { viewModel.onEvent(HomeScreenEvent.HideTransferToMovieDialog) },
+            onConfirmText = "Ok"
+        ) {
+            state.selectedId?.let { viewModel.onEvent(HomeScreenEvent.TransferToMovie(it)) }
+            viewModel.onEvent(HomeScreenEvent.HideTransferToMovieDialog)
+        }
+
+        ConfirmationDialog(
+            state = state.showTransferToSeriesDialog,
+            title = "Transfer To Series",
+            message = "Do you want to transfer \"${state.inputTitle}\" to series?",
+            onDismiss = { viewModel.onEvent(HomeScreenEvent.HideTransferToSeriesDialog) },
+            onCancelText = "Cancel",
+            onCancel = { viewModel.onEvent(HomeScreenEvent.HideTransferToSeriesDialog) },
+            onConfirmText = "Ok"
+        ) {
+            state.selectedId?.let { viewModel.onEvent(HomeScreenEvent.TransferToSeries(it)) }
+            viewModel.onEvent(HomeScreenEvent.HideTransferToSeriesDialog)
         }
 
         if (state.showFilterSheet) {
@@ -399,6 +433,9 @@ fun HomeScreen(
                         onToggleFavorite = {
                             viewModel.onEvent(HomeScreenEvent.ToggleFavoriteMovie(it))
                         },
+                        onTransferToSeries = {
+                            viewModel.onEvent(HomeScreenEvent.ShowTransferToSeriesDialog(it.id, it.title))
+                        },
                         onView = {
                             viewModel.onEvent(
                                 HomeScreenEvent.ShowMovieModal(
@@ -443,6 +480,9 @@ fun HomeScreen(
                         onToggleFavorite = {
                             viewModel.onEvent(HomeScreenEvent.ToggleFavoriteSeries(it))
                         },
+                        onTransferToMovie = {
+                            viewModel.onEvent(HomeScreenEvent.ShowTransferToMovieDialog(it.id, it.title))
+                        },
                         onView = {
                             viewModel.onEvent(
                                 HomeScreenEvent.ShowSeriesModal(
@@ -462,7 +502,7 @@ fun HomeScreen(
                         onEdit = {
                             viewModel.onEvent(
                                 HomeScreenEvent.ShowSeriesModal(
-                                    editMode = false,
+                                    editMode = true,
                                     id = it.id,
                                     title = it.title,
                                     season = it.season,

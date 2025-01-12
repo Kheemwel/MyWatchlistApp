@@ -57,6 +57,7 @@ fun MovieTab(
     selectedItems: List<Long> = emptyList(),
     onItemSelected: (Long) -> Unit = {},
     onToggleFavorite: (Movie) -> Unit = {},
+    onTransferToSeries: (Movie) -> Unit = {},
     onView: (Movie) -> Unit,
     onEdit: (Movie) -> Unit,
     onDelete: (Movie) -> Unit
@@ -68,6 +69,8 @@ fun MovieTab(
                 status = movie.status?.name ?: "",
                 isFavorite = movie.isFavorite,
                 onFavorite = { onToggleFavorite(movie) },
+                transferOptionText = "Transfer to Series",
+                onTransfer = { onTransferToSeries(movie) },
                 onEdit = { onEdit(movie) },
                 onDelete = { onDelete(movie) },
                 selectionMode = selectionMode,
@@ -99,6 +102,7 @@ fun SeriesTab(
     selectedItems: List<Long> = emptyList(),
     onItemSelected: (Long) -> Unit = {},
     onToggleFavorite: (Series) -> Unit = {},
+    onTransferToMovie: (Series) -> Unit = {},
     onView: (Series) -> Unit,
     onEdit: (Series) -> Unit,
     onDelete: (Series) -> Unit
@@ -110,6 +114,8 @@ fun SeriesTab(
                 status = series.status?.name ?: "",
                 isFavorite = series.isFavorite,
                 onFavorite = { onToggleFavorite(series) },
+                transferOptionText = "Transfer to Movie",
+                onTransfer = { onTransferToMovie(series) },
                 onEdit = { onEdit(series) },
                 onDelete = { onDelete(series) },
                 selectionMode = selectionMode,

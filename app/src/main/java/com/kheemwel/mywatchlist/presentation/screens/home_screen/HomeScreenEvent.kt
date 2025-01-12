@@ -110,4 +110,12 @@ sealed class HomeScreenEvent {
     data object ToggleFavorite : HomeScreenEvent()
     data class ToggleFavoriteMovie(val movie: Movie) : HomeScreenEvent()
     data class ToggleFavoriteSeries(val series: Series) : HomeScreenEvent()
+    data object SwitchMovieModalToSeriesModal : HomeScreenEvent()
+    data object SwitchSeriesModalToMovieModal : HomeScreenEvent()
+    data class TransferToMovie(val id: Long) : HomeScreenEvent()
+    data class ShowTransferToMovieDialog(val id: Long, val title: String) : HomeScreenEvent()
+    data object HideTransferToMovieDialog : HomeScreenEvent()
+    data class TransferToSeries(val id: Long) : HomeScreenEvent()
+    data class ShowTransferToSeriesDialog(val id: Long, val title: String) : HomeScreenEvent()
+    data object HideTransferToSeriesDialog : HomeScreenEvent()
 }
