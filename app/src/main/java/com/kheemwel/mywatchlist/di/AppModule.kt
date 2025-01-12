@@ -17,6 +17,7 @@ import com.kheemwel.mywatchlist.data.repository.GenreRepositoryImpl
 import com.kheemwel.mywatchlist.data.repository.MovieRepositoryImpl
 import com.kheemwel.mywatchlist.data.repository.SeriesRepositoryImpl
 import com.kheemwel.mywatchlist.data.repository.StatusRepositoryImpl
+import com.kheemwel.mywatchlist.data.repository.TransferWatchlistRepositoryImpl
 import com.kheemwel.mywatchlist.data.util.DATABASE_NAME
 import com.kheemwel.mywatchlist.domain.repository.AppDataRepository
 import com.kheemwel.mywatchlist.domain.repository.CountryRepository
@@ -25,6 +26,7 @@ import com.kheemwel.mywatchlist.domain.repository.GenreRepository
 import com.kheemwel.mywatchlist.domain.repository.MovieRepository
 import com.kheemwel.mywatchlist.domain.repository.SeriesRepository
 import com.kheemwel.mywatchlist.domain.repository.StatusRepository
+import com.kheemwel.mywatchlist.domain.repository.TransferWatchlistRepository
 import com.kheemwel.mywatchlist.domain.usecase.appdata_usecase.AppDataUseCases
 import com.kheemwel.mywatchlist.domain.usecase.appdata_usecase.ExportAppDataUseCase
 import com.kheemwel.mywatchlist.domain.usecase.appdata_usecase.ImportAppDataUseCase
@@ -76,6 +78,9 @@ import com.kheemwel.mywatchlist.domain.usecase.status_usecase.GetAllStatusesUseC
 import com.kheemwel.mywatchlist.domain.usecase.status_usecase.GetStatusUseCase
 import com.kheemwel.mywatchlist.domain.usecase.status_usecase.StatusUseCases
 import com.kheemwel.mywatchlist.domain.usecase.status_usecase.UpdateStatusUseCase
+import com.kheemwel.mywatchlist.domain.usecase.transfer_watchlist_usecase.TransferMovieToSeries
+import com.kheemwel.mywatchlist.domain.usecase.transfer_watchlist_usecase.TransferSeriesToMovie
+import com.kheemwel.mywatchlist.domain.usecase.transfer_watchlist_usecase.TransferWatchlistUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -228,6 +233,24 @@ object AppModule {
             deleteSeriesUseCase = DeleteSeriesUseCase(repository),
             deleteManySeriesUseCase = DeleteManySeriesUseCase(repository),
             deleteAllSeriesUseCase = DeleteAllSeriesUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransferWatchlistRepository(
+        movieDao: MovieDao,
+        seriesDao: SeriesDao
+        ): TransferWatchlistRepository {
+        return TransferWatchlistRepositoryImpl(movieDao, seriesDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransferWatchlistUseCases(repository: TransferWatchlistRepository): TransferWatchlistUseCases {
+        return TransferWatchlistUseCases(
+            transferMovieToSeries = TransferMovieToSeries(repository),
+            transferSeriesToMovie = TransferSeriesToMovie(repository)
         )
     }
 

@@ -37,4 +37,6 @@ data class HomeScreenState(
     val inputGenres: List<Genre> = emptyList(),
     val inputFavorite: Boolean = false,
     val inputReleaseDate: String = "",
+    val showTransferToMovieDialog: Boolean = false,
+    val showTransferToSeriesDialog: Boolean = false,
 )

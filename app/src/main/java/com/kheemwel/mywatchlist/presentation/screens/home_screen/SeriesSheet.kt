@@ -35,8 +35,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.kheemwel.mywatchlist.R
 import com.kheemwel.mywatchlist.domain.model.Country
 import com.kheemwel.mywatchlist.domain.model.Genre
 import com.kheemwel.mywatchlist.domain.model.Status
@@ -73,6 +75,7 @@ fun SeriesSheet(
     onEnterReleaseDate: (String) -> Unit,
     inputFavorite: Boolean,
     onToggleFavorite: () -> Unit,
+    onTransfer: () -> Unit,
     onSwitchToMovie: () -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit,
@@ -121,6 +124,7 @@ fun SeriesSheet(
                 genres = inputGenres.map { it.name },
                 releaseDate = inputReleaseDate,
                 isFavorite = inputFavorite,
+                onTransfer = onTransfer,
                 onEditMode = { onEditMode() },
                 onDelete = onDelete,
                 onExit = onDismiss
@@ -139,11 +143,13 @@ private fun ViewSeries(
     genres: List<String>,
     releaseDate: String,
     isFavorite: Boolean,
+    onTransfer: () -> Unit,
     onEditMode: () -> Unit,
     onDelete: () -> Unit,
     onExit: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showTransferToMovieDialog by remember { mutableStateOf(false) }
 
     ConfirmationDialog(
         state = showDeleteDialog,
@@ -161,6 +167,20 @@ private fun ViewSeries(
         onExit()
     }
 
+    ConfirmationDialog(
+        state = showTransferToMovieDialog,
+        title = "Transfer to Movie",
+        message = "Do you want to transfer this series to movie?",
+        onDismiss = { showTransferToMovieDialog = false },
+        onCancelText = "Cancel",
+        onCancel = { showTransferToMovieDialog = false },
+        onConfirmText = "Ok"
+    ) {
+        onTransfer()
+        showTransferToMovieDialog = false
+        onExit()
+    }
+
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
             Row(modifier = Modifier.padding(16.dp)) {
@@ -171,6 +191,10 @@ private fun ViewSeries(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Row {
+                    IconButton(onClick = { showTransferToMovieDialog = true }) {
+                        Icon(painterResource(R.drawable.baseline_swap_horiz_24), contentDescription = "Transfer")
+                    }
+
                     IconButton(onClick = onEditMode) {
                         Icon(Icons.Filled.Edit, contentDescription = "Edit")
                     }
@@ -311,7 +335,7 @@ private fun AddEditSeries(
                 Spacer(modifier = Modifier.weight(1f))
                 if (selectedId == null) {
                     Button(onClick = onSwitchToMovie) {
-                        Text("Switch to movie")
+                        Text("Switch to Movie")
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                 }

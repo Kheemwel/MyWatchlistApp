@@ -30,6 +30,8 @@ fun WatchTile(
     status: String,
     isFavorite: Boolean,
     onFavorite: () -> Unit,
+    transferOptionText: String,
+    onTransfer: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     selectionMode: Boolean = false,
@@ -78,7 +80,7 @@ fun WatchTile(
                     DropdownMenuItem(
                         leadingIcon = {
                             Icon(
-                                Icons.Filled.Star,
+                                imageVector = Icons.Filled.Star,
                                 contentDescription = "Favorite"
                             )
                         },
@@ -86,6 +88,14 @@ fun WatchTile(
                         onClick = {
                             openMenu = false
                             onFavorite()
+                        })
+                    DropdownMenuItem(leadingIcon = {
+                        Icon(painterResource(R.drawable.baseline_swap_horiz_24), contentDescription = "Transfer")
+                    },
+                        text = { Text(transferOptionText) },
+                        onClick = {
+                            openMenu = false
+                            onTransfer()
                         })
                     DropdownMenuItem(leadingIcon = {
                         Icon(
