@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import com.kheemwel.mywatchlist.R
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -56,7 +57,7 @@ fun WatchTile(
                 )
             }
         },
-        headlineContent = { Text(text) },
+        headlineContent = { Text(text, maxLines = 2, overflow = TextOverflow.Ellipsis) },
         supportingContent = { Text(status) },
         trailingContent = {
             if (selectionMode) {
